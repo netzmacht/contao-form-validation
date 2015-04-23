@@ -76,9 +76,9 @@ class Assembler
             $validation->setError($settings->err_class, $settings->err_container ?: null);
         }
 
-        foreach (array(Validation::ICON_VALID, Validation::ICON_INVALID, Validation::ICON_VALIDATING) as $icon) {
-            $this->assembleIcon($validation, $settings, $icon);
-        }
+        $this->assembleIcon($validation, $settings, Validation::ICON_VALID);
+        $this->assembleIcon($validation, $settings, Validation::ICON_INVALID);
+        $this->assembleIcon($validation, $settings, Validation::ICON_VALIDATING);
 
         foreach (deserialize($settings->excluded, true) as $excluded) {
             $validation->addExcluded($excluded);
@@ -98,7 +98,7 @@ class Assembler
     private function assembleFields(Validation $validation, $fields)
     {
         foreach ($fields as $model) {
-            if (!in_array($model->type, $this->widgets)) {
+            if (!in_array($model->type, $this->widgets) || !$model->fv_enabled) {
                 continue;
             }
 
@@ -126,6 +126,8 @@ class Assembler
                     }
                 }
             }
+
+            $this->assembleFieldValidators($field, $model);
         }
     }
 
@@ -168,6 +170,72 @@ class Assembler
 
         if ($force || $model->$option) {
             $object->$method($model->$option);
+        }
+    }
+
+    /**
+     * Assemble field validators.
+     *
+     * @param Field           $field The validation field.
+     * @param \FormFieldModel $model The field model.
+     *
+     * @return void
+     */
+    private function assembleFieldValidators(Field $field, $model)
+    {
+        $this->assembleStringLengthValidator($field, $model);
+        $this->assembeFileValidator($field, $model);
+    }
+
+    /**
+     * Assemble the string length validator.
+     *
+     * @param Field           $field The validation field.
+     * @param \FormFieldModel $model The field model.
+     *
+     * @return void
+     */
+    private function assembleStringLengthValidator(Field $field, $model)
+    {
+        if (($model->type === 'text' || $model->type === 'textarea') && ($model->minlength || $model->maxlength)) {
+            $options = array(
+                'trim' => true
+            );
+
+            if ($model->minlength > 0) {
+                $options['min'] = (int)$model->minlength;
+            }
+
+            if ($model->maxlength > 0) {
+                $options['max'] = (int)$model->maxlength;
+            }
+
+            $field->addValidator('stringLength', $options);
+        }
+    }
+
+    /**
+     * Assemble the file validator for upload widgets.
+     *
+     * @param Field           $field The validation field.
+     * @param \FormFieldModel $model The field model.
+     *
+     * @return void
+     */
+    private function assembeFileValidator(Field $field, $model)
+    {
+        if ($model->type === 'upload') {
+            $options = array('maxFiles' => 1);
+
+            if ($model->extensions) {
+                $options['extension'] = $model->extensions;
+            }
+
+            if ($model->maxlength > 0) {
+                $options['maxSize'] = (int)$model->maxlength;
+            }
+
+            $field->addValidator('file', $options);
         }
     }
 }
