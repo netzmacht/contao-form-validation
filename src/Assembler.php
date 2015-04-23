@@ -127,7 +127,8 @@ class Assembler
                 }
             }
 
-            $this->assembleFieldValidators($field, $model);
+            $this->assembleStringLengthValidator($field, $model);
+            $this->assembleFileValidator($field, $model);
         }
     }
 
@@ -174,20 +175,6 @@ class Assembler
     }
 
     /**
-     * Assemble field validators.
-     *
-     * @param Field           $field The validation field.
-     * @param \FormFieldModel $model The field model.
-     *
-     * @return void
-     */
-    private function assembleFieldValidators(Field $field, $model)
-    {
-        $this->assembleStringLengthValidator($field, $model);
-        $this->assembeFileValidator($field, $model);
-    }
-
-    /**
      * Assemble the string length validator.
      *
      * @param Field           $field The validation field.
@@ -203,11 +190,11 @@ class Assembler
             );
 
             if ($model->minlength > 0) {
-                $options['min'] = (int)$model->minlength;
+                $options['min'] = (int) $model->minlength;
             }
 
             if ($model->maxlength > 0) {
-                $options['max'] = (int)$model->maxlength;
+                $options['max'] = (int) $model->maxlength;
             }
 
             $field->addValidator('stringLength', $options);
@@ -222,7 +209,7 @@ class Assembler
      *
      * @return void
      */
-    private function assembeFileValidator(Field $field, $model)
+    private function assembleFileValidator(Field $field, $model)
     {
         if ($model->type === 'upload') {
             $options = array('maxFiles' => 1);
@@ -232,7 +219,7 @@ class Assembler
             }
 
             if ($model->maxlength > 0) {
-                $options['maxSize'] = (int)$model->maxlength;
+                $options['maxSize'] = (int) $model->maxlength;
             }
 
             $field->addValidator('file', $options);
