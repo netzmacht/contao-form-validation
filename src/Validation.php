@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package    dev
+ * @package    contao-form-validation
  * @author     David Molineus <david.molineus@netzmacht.de>
  * @copyright  2015 netzmacht creative David Molineus
  * @license    LGPL 3.0
@@ -11,12 +11,16 @@
 
 namespace Netzmacht\Contao\FormValidation;
 
+use Netzmacht\JavascriptBuilder\Encoder;
+use Netzmacht\JavascriptBuilder\Flags;
+use Netzmacht\JavascriptBuilder\Type\ConvertsToJavascript;
+
 /**
  * Validation class.
  *
  * @package Netzmacht\Contao\FormValidation
  */
-class Validation
+class Validation implements ConvertsToJavascript
 {
     const ICON_VALID      = 'valid';
     const ICON_INVALID    = 'invalid';
@@ -85,12 +89,12 @@ class Validation
     /**
      * The row container.
      * 
-     * @var
+     * @var string
      */
     private $row;
 
     /**
-     * Threshold character length
+     * Threshold character length.
      * 
      * @var int
      */
@@ -116,6 +120,32 @@ class Validation
      * @var array
      */
     private $fields = array();
+
+    /**
+     * The form html id.
+     *
+     * @var string
+     */
+    private $formId;
+
+    /**
+     * Locale setting.
+     *
+     * @var string
+     */
+    private $locale;
+
+    /**
+     * Construct.
+     *
+     * @param string $formId The form id.
+     * @param string $locale The locale.
+     */
+    public function __construct($formId, $locale = null)
+    {
+        $this->formId = $formId;
+        $this->locale = $locale;
+    }
 
     /**
      * Set the icon.
@@ -211,14 +241,17 @@ class Validation
     /**
      * Set button.
      *
-     * @param array  $button   The button.
+     * @param string $button   The button.
      * @param string $disabled The disabled class.
      *
      * @return $this
      */
     public function setButton($button, $disabled = '')
     {
-        $this->button = array($button, $disabled);
+        $this->button = array(
+            'selector' => $button,
+            'disabled' => $disabled
+        );
 
         return $this;
     }
@@ -455,5 +488,97 @@ class Validation
         $this->fields[$field->getName()] = $field;
 
         return $field;
+    }
+
+    /**
+     * Get formId.
+     *
+     * @return string
+     */
+    public function getFormId()
+    {
+        return $this->formId;
+    }
+
+    /**
+     * Get locale.
+     *
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * Set locale.
+     *
+     * @param string $locale Locale.
+     *
+     * @return $this
+     */
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
+    /**
+     * Encode the javascript representation of the object.
+     *
+     * @param Encoder  $encoder The javascript encoder.
+     * @param int|null $flags   The encoding flags.
+     *
+     * @return string
+     */
+    public function encode(Encoder $encoder, $flags = null)
+    {
+        $options = get_object_vars($this);
+        unset($options['formId']);
+        $options = $this->removeEmptyOptions($options);
+
+        if (!empty($options['fields'])) {
+            foreach ($options['fields'] as $name => $value) {
+                /** @var Field $value */
+                $options['fields'][$name] = $value->getOptions();
+            }
+        }
+
+        return sprintf(
+            '$(\'#%s\').formValidation(%s);',
+            $this->getFormId(),
+            $encoder->encodeArray($options, Flags::add(JSON_FORCE_OBJECT, $flags))
+        );
+    }
+
+    /**
+     * Remove empty options.
+     *
+     * @param array $options Options.
+     *
+     * @return array
+     */
+    private function removeEmptyOptions($options)
+    {
+        $options = array_filter(
+            $options,
+            function ($item) {
+                return $item !== null;
+            }
+        );
+
+        $options = array_map(
+            function ($item) {
+                if (is_array($item)) {
+                    $item = $this->removeEmptyOptions($item);
+                }
+
+                return $item;
+            },
+            $options
+        );
+
+        return $options;
     }
 }

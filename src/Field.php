@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package    dev
+ * @package    contao-form-validation
  * @author     David Molineus <david.molineus@netzmacht.de>
  * @copyright  2015 netzmacht creative David Molineus
  * @license    LGPL 3.0
@@ -13,9 +13,16 @@ namespace Netzmacht\Contao\FormValidation;
 
 use Netzmacht\JavascriptBuilder\Encoder;
 
+/**
+ * Form Validation field.
+ *
+ * @package Netzmacht\Contao\FormValidation
+ */
 class Field
 {
     /**
+     * The field name.
+     *
      * @var string
      */
     private $name;
@@ -70,7 +77,7 @@ class Field
     private $icon;
 
     /**
-     * he CSS selector to indicate the field.
+     * The CSS selector to indicate the field.
      *
      * It is used in case that it's not possible to use the name attribute for the field.
      *
@@ -79,11 +86,25 @@ class Field
     private $selector;
 
     /**
+     * Verbose error messages.
+     *
+     * @var bool
+     */
+    private $verbose;
+
+    /**
      * Validators.
      *
      * @var array
      */
     private $validators = array();
+
+    /**
+     * Threshold.
+     *
+     * @var int
+     */
+    private $threshold;
 
     /**
      * Construct.
@@ -124,7 +145,7 @@ class Field
      */
     public function setAutoFocus($autoFocus)
     {
-        $this->autoFocus = $autoFocus;
+        $this->autoFocus = (bool) $autoFocus;
 
         return $this;
     }
@@ -148,7 +169,7 @@ class Field
      */
     public function setEnabled($enabled)
     {
-        $this->enabled = $enabled;
+        $this->enabled = (bool) $enabled;
 
         return $this;
     }
@@ -196,7 +217,7 @@ class Field
      */
     public function setExcluded($excluded)
     {
-        $this->excluded = $excluded;
+        $this->excluded = (bool) $excluded;
 
         return $this;
     }
@@ -268,7 +289,7 @@ class Field
      */
     public function setIcon($icon)
     {
-        $this->icon = $icon;
+        $this->icon = (bool) $icon;
 
         return $this;
     }
@@ -293,6 +314,54 @@ class Field
     public function setSelector($selector)
     {
         $this->selector = $selector;
+
+        return $this;
+    }
+
+    /**
+     * Get verbose.
+     *
+     * @return boolean
+     */
+    public function isVerbose()
+    {
+        return $this->verbose;
+    }
+
+    /**
+     * Set verbose.
+     *
+     * @param boolean $verbose Verbose.
+     *
+     * @return $this
+     */
+    public function setVerbose($verbose)
+    {
+        $this->verbose = (bool) $verbose;
+
+        return $this;
+    }
+
+    /**
+     * Get threshold.
+     *
+     * @return int
+     */
+    public function getThreshold()
+    {
+        return $this->threshold;
+    }
+
+    /**
+     * Set threshold.
+     *
+     * @param int $threshold Threshold.
+     *
+     * @return $this
+     */
+    public function setThreshold($threshold)
+    {
+        $this->threshold = $threshold;
 
         return $this;
     }
@@ -331,7 +400,16 @@ class Field
     {
         $options = get_object_vars($this);
         unset($options['name']);
-        $options = array_filter($options);
+        $options = array_filter(
+            $options,
+            function ($item) {
+                return $item !== null;
+            }
+        );
+
+        if (empty($options['validators'])) {
+            unset($options['validators']);
+        }
 
         return $options;
     }

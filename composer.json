@@ -1,39 +1,46 @@
 {
-    "name":"netzmacht/contao-form-validation",
-    "description":"Javascript form validation.",
-    "keywords":["contao", "form", "validation", "frontend", "javascript"],
-    "type":"contao-module",
-    "license":"LGPL-3.0+",
-    "authors":[
-        {
-            "name":"David Molineus",
-            "email":"mail@netzmacht.de",
-            "homepage":"http://www.netzmacht.de",
-            "role":"Project leader"
-        }
-    ],
-    "support":{
-        "email":"mail@netzmacht.de",
-        "issues":"https://github.com/netzmacht/contao-form-validation/issues",
-        "source":"https://github.com/netzmacht/contao-form-validation"
-    },
-    "require":{
-        "php":">=5.3",
-        "contao/core":">=3.1,<3.5",
-        "contao-community-alliance/meta-palettes":"~1",
-        "menatwork/contao-multicolumnwizard":"~3.2"
-    },
-    "autoload": {
-        "psr-4": { "Netzmacht\\Contao\\FormValidation\\": "src/" }
-    },
-    "extra":{
-        "branch-alias": {
-            "dev-master": "1.0.x-dev"
-        },
-        "contao": {
-            "sources":{
-                "module": "system/modules/form-validation"
-            }
-        }
+  "name":"netzmacht/contao-form-validation",
+  "description":"Javascript form validation.",
+  "keywords":["contao", "form", "validation", "frontend", "javascript"],
+  "type":"contao-module",
+  "license":"LGPL-3.0+",
+  "authors":[
+    {
+      "name":"David Molineus",
+      "email":"mail@netzmacht.de",
+      "homepage":"http://www.netzmacht.de",
+      "role":"Developer"
     }
+  ],
+  "support":{
+    "email":"mail@netzmacht.de",
+    "issues":"https://github.com/netzmacht/contao-form-validation/issues",
+    "source":"https://github.com/netzmacht/contao-form-validation"
+  },
+  "require":{
+    "php":">=5.4",
+    "contao/core":">=3.1,<3.6",
+    "contao-community-alliance/meta-palettes":"~1",
+    "menatwork/contao-multicolumnwizard":"~3.2",
+    "netzmacht/contao-toolkit": "~1.0",
+    "netzmacht/php-javascript-builder": "~1.0"
+  },
+  "require-dev":{
+    "netzmacht/contao-build-tools": "~1.1"
+  },
+  "prefer-stable": true,
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": { "Netzmacht\\Contao\\FormValidation\\": "src/" }
+  },
+  "extra":{
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
+    },
+    "contao": {
+      "sources":{
+        "module": "system/modules/form-validation"
+      }
+    }
+  }
 }

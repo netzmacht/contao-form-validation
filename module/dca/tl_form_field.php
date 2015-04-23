@@ -1,11 +1,60 @@
 <?php
 
-foreach ($GLOBALS['TL_DCA']['tl_form_field']['palettes'] as $name => $palette) {
-    if (is_array($palette)) {
-        continue;
-    }
-}
+/**
+ * @package    contao-form-validation
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2015 netzmacht creative David Molineus
+ * @license    LGPL 3.0
+ * @filesource
+ *
+ */
 
+/*
+ * Config.
+ */
+$GLOBALS['TL_DCA']['tl_form_field']['config']['onload_callback'][] = array(
+    'Netzmacht\Contao\FormValidation\Dca\FormField',
+    'addFormValidationToPalette'
+);
+
+$GLOBALS['TL_DCA']['tl_form_field']['config']['onsubmit_callback'][] = array(
+    'Netzmacht\Contao\FormValidation\Dca\FormField',
+    'clearCache'
+);
+
+$GLOBALS['TL_DCA']['tl_form_field']['config']['ondelete_callback'][] = array(
+    'Netzmacht\Contao\FormValidation\Dca\FormField',
+    'clearCache'
+);
+
+
+/*
+ * Palettes.
+ */
+$GLOBALS['TL_DCA']['tl_form_field']['metasubpalettes']['fv_enabled'] = array(
+    'fv_autofocus',
+    'fv_selector',
+    'fv_message',
+    'fv_icon',
+    'fv_verbose',
+    'fv_advanced'
+);
+
+$GLOBALS['TL_DCA']['tl_form_field']['metasubpalettes']['fv_advanced'] = array(
+    'fv_row',
+    'fv_threshold',
+    'fv_trigger',
+    'fv_err',
+);
+
+$GLOBALS['TL_DCA']['tl_form_field']['metasubselectpalettes']['fv_err']['selector'] = array(
+    'fv_err_selector'
+);
+
+
+/*
+ * Fields.
+ */
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_autofocus'] = array
 (
     'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['fv_autofocus'],
@@ -13,7 +62,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_autofocus'] = array
     'exclude'   => true,
     'default'   => true,
     'eval'      => array(
-        'tl_class'           => 'w50',
+        'tl_class' => 'w50',
     ),
     'sql'       => "char(1) NOT NULL default ''"
 );
@@ -25,9 +74,20 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_enabled'] = array
     'exclude'   => true,
     'default'   => true,
     'eval'      => array(
-        'tl_class'           => 'w50',
+        'tl_class'       => 'w50',
+        'submitOnChange' => true,
     ),
     'sql'       => "char(1) NOT NULL default ''"
+);
+
+$GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_message'] = array(
+    'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['fv_message'],
+    'inputType' => 'text',
+    'exclude'   => true,
+    'eval'      => array(
+        'tl_class' => 'w50',
+    ),
+    'sql'       => "varchar(128) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_err'] = array
@@ -41,19 +101,21 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_err'] = array
         'submitOnChange'     => true,
         'includeBlankOption' => true,
     ),
-    'sql'       => "varchar(128) NOT NULL default ''"
+    'sql'       => "varchar(16) NOT NULL default ''"
 );
 
-$GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_excluded'] = array
+$GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_err_selector'] = array
 (
-    'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['fv_excluded'],
-    'inputType' => 'checkbox',
+    'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['fv_err_selector'],
+    'inputType' => 'text',
     'exclude'   => true,
-    'default'   => true,
     'eval'      => array(
         'tl_class'           => 'w50',
+        'submitOnChange'     => true,
+        'includeBlankOption' => true,
+        'decodeEntities'     => true,
     ),
-    'sql'       => "char(1) NOT NULL default ''"
+    'sql'       => "varchar(128) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_icon'] = array
@@ -63,7 +125,20 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_icon'] = array
     'exclude'   => true,
     'default'   => true,
     'eval'      => array(
-        'tl_class'           => 'w50',
+        'tl_class' => 'w50',
+    ),
+    'sql'       => "char(1) NOT NULL default ''"
+);
+
+$GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_advanced'] = array
+(
+    'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['fv_advanced'],
+    'inputType' => 'checkbox',
+    'exclude'   => true,
+    'default'   => true,
+    'eval'      => array(
+        'tl_class'       => 'w50 m12 clr',
+        'submitOnChange' => true,
     ),
     'sql'       => "char(1) NOT NULL default ''"
 );
@@ -74,9 +149,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_row'] = array
     'inputType' => 'text',
     'exclude'   => true,
     'eval'      => array(
-        'tl_class'           => 'long clr',
-        'submitOnChange'     => true,
-        'includeBlankOption' => true,
+        'tl_class' => 'w50',
     ),
     'sql'       => "varchar(128) NOT NULL default ''"
 );
@@ -87,7 +160,8 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_selector'] = array
     'inputType' => 'text',
     'exclude'   => true,
     'eval'      => array(
-        'tl_class'     => 'w50',
+        'tl_class'       => 'w50',
+        'decodeEntities' => true,
     ),
     'sql'       => "varchar(128) NOT NULL default ''"
 );
@@ -98,10 +172,11 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_threshold'] = array
     'inputType' => 'text',
     'exclude'   => true,
     'eval'      => array(
-        'tl_class'     => 'w50',
-        'rxgp'         => 'digit'
+        'tl_class'    => 'w50',
+        'rxgp'        => 'digit',
+        'nullIfEmpty' => true,
     ),
-    'sql'       => "int(3) NOT NULL default '0'"
+    'sql'       => "int(3) NULL"
 );
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_trigger'] = array
@@ -110,7 +185,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_trigger'] = array
     'inputType' => 'text',
     'exclude'   => true,
     'eval'      => array(
-        'tl_class'     => 'w50',
+        'tl_class' => 'w50',
     ),
     'sql'       => "varchar(128) NOT NULL default ''"
 );
@@ -122,7 +197,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_verbose'] = array
     'exclude'   => true,
     'default'   => true,
     'eval'      => array(
-        'tl_class'           => 'w50',
+        'tl_class' => 'w50',
     ),
     'sql'       => "char(1) NOT NULL default ''"
 );

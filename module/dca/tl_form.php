@@ -1,66 +1,88 @@
 <?php
-//
-//$GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_framework'] = array
-//(
-//    'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['fv_framework'],
-//    'inputType' => 'select',
-//    'exclude'   => true,
-//    'options'   => array(
-//        'contao',
-//        'bootstrap',
-//        'foundation',
-//        'pure',
-//        'semantic',
-//        'uikit'
-//    ),
-//    'eval'      => array(
-//        'tl_class'           => 'w50',
-//        'includeBlankOption' => true,
-//    ),
-//    'sql'       => "varchar(128) NOT NULL default ''"
-//);
-//
-//$GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_err_clazz'] = array
-//(
-//    'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['fv_err_clazz'],
-//    'inputType' => 'text',
-//    'exclude'   => true,
-//    'eval'      => array(
-//        'tl_class'     => 'w50',
-//    ),
-//    'sql'       => "varchar(128) NOT NULL default ''"
-//);
-//
-//$GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_err_container'] = array
-//(
-//    'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['fv_err_container'],
-//    'inputType' => 'text',
-//    'exclude'   => true,
-//    'eval'      => array(
-//        'tl_class'     => 'w50',
-//    ),
-//    'sql'       => "varchar(128) NOT NULL default ''"
-//);
-//
-//
-//$GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_button_selector'] = array
-//(
-//    'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['fv_button_selector'],
-//    'inputType' => 'text',
-//    'exclude'   => true,
-//    'eval'      => array(
-//        'tl_class'     => 'w50',
-//    ),
-//    'sql'       => "varchar(128) NOT NULL default ''"
-//);
-//
-//$GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_button_disabled'] = array
-//(
-//    'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['fv_button_disabled'],
-//    'inputType' => 'text',
-//    'exclude'   => true,
-//    'eval'      => array(
-//        'tl_class'     => 'w50',
-//    ),
-//    'sql'       => "varchar(128) NOT NULL default ''"
-//);
+
+/**
+ * @package    contao-form-validation
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2015 netzmacht creative David Molineus
+ * @license    LGPL 3.0
+ * @filesource
+ *
+ */
+
+/*
+ * Config
+ */
+$GLOBALS['TL_DCA']['tl_form']['config']['onsubmit_callback'][] = array(
+    'Netzmacht\Contao\FormValidation\Dca\Form',
+    'clearCache'
+);
+
+$GLOBALS['TL_DCA']['tl_form']['config']['ondelete_callback'][] = array(
+    'Netzmacht\Contao\FormValidation\Dca\Form',
+    'clearCache'
+);
+
+/*
+ * Global operations.
+ */
+array_insert($GLOBALS['TL_DCA']['tl_form']['list']['global_operations'], 0, array(
+    'formvalidation' => array(
+        'label'               => &$GLOBALS['TL_LANG']['tl_form']['formvalidation'],
+        'href'                => 'table=tl_form_validation',
+        'icon'                => 'form.gif',
+        'attributes'          => 'onclick="Backend.getScrollOffset();"'
+    )
+));
+
+
+/*
+ * Palettes
+ */
+\Bit3\Contao\MetaPalettes\MetaPalettes::appendBefore(
+    'tl_form',
+    'expert',
+    array(
+        'formvalidation' => array(':hide', 'fv_active')
+    )
+);
+
+$GLOBALS['TL_DCA']['tl_form']['metasubpalettes']['fv_active'] = array('fv_setting');
+
+
+/*
+ * Fields
+ */
+$GLOBALS['TL_DCA']['tl_form']['fields']['fv_active'] = array
+(
+    'label'     => &$GLOBALS['TL_LANG']['tl_form']['fv_active'],
+    'inputType' => 'checkbox',
+    'exclude'   => true,
+    'eval'      => array(
+        'tl_class'           => 'w50 m12',
+        'submitOnChange'      => true,
+    ),
+    'sql'       => "char(1) NOT NULL default ''"
+);
+
+$GLOBALS['TL_DCA']['tl_form']['fields']['fv_setting'] = array
+(
+    'label'     => &$GLOBALS['TL_LANG']['tl_form']['fv_setting'],
+    'inputType' => 'select',
+    'exclude'   => true,
+    'options_callback' => array(
+        'Netzmacht\Contao\FormValidation\Dca\Form', 'getSettings'
+    ),
+    'wizard' => array(
+        \Netzmacht\Contao\Toolkit\Dca::createPopupWizardCallback(
+            'do=form&amp;table=tl_form_validation',
+            $GLOBALS['TL_LANG']['tl_form']['fv_edit_setting'],
+            'edit.gif'
+        ),
+    ),
+    'eval'      => array(
+        'includeBlankOption' => true,
+        'chosen'             => true,
+        'tl_class'           => 'w50',
+    ),
+    'sql'       => "int(10) NOT NULL default '0'"
+);
