@@ -48,9 +48,11 @@ class Form
     {
         $options = $GLOBALS['FORMVALIDATION_FRAMEWORKS'];
 
+// @codingStandardsIgnoreStart
 //        if (version_compare(VERSION, '3.4', '>=')) {
 //            $options[] = 'contao';
 //        }
+// @codingStandardsIgnoreEnd
 
         return $options;
     }
