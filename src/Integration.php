@@ -197,6 +197,7 @@ class Integration
     private function buildJavascript($validation)
     {
         $template = new \FrontendTemplate('form_validation_js');
+
         $template->validation = $validation;
         $template->javascript = $this->builder->encode($validation);
 

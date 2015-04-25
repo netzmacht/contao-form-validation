@@ -23,7 +23,7 @@ use Netzmacht\Contao\Toolkit\ServiceContainerTrait;
  */
 class Form
 {
-    use ServiceContainerTrait
+    use ServiceContainerTrait;
 
     /**
      * Initialize the view.

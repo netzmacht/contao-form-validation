@@ -235,6 +235,7 @@ class Assembler
      * @param \FormFieldModel $model      The field model.
      *
      * @return void
+     * @SuppressWarnings(PHPMD.Superglobals)
      */
     private function assemblePasswordValidators(Validation $validation, Field $field, $model)
     {
