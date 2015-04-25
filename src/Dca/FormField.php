@@ -12,7 +12,7 @@
 namespace Netzmacht\Contao\FormValidation\Dca;
 
 use Bit3\Contao\MetaPalettes\MetaPalettes;
-use Netzmacht\Contao\FormValidation\Cache;
+use Netzmacht\Contao\Toolkit\ServiceContainerTrait;
 
 /**
  * Helper for form field data container.
@@ -21,6 +21,8 @@ use Netzmacht\Contao\FormValidation\Cache;
  */
 class FormField
 {
+    use ServiceContainerTrait;
+
     /**
      * Add form validation to the palette of supported widgets.
      *
@@ -49,7 +51,7 @@ class FormField
      */
     public function clearCache($dataContainer)
     {
-        $cache = new Cache();
+        $cache = $this->getService('form-validation.cache');
         $cache->remove($dataContainer->activeRecord->pid);
     }
 }

@@ -157,14 +157,14 @@ class Integration
      */
     protected function getValidationJavascript($model, $fields, $settings)
     {
-        if (!$this->cache->isCached($model->id)) {
+        if (!$this->cache->isCached($model->id, $this->locale)) {
             $validation = $this->buildValidation($model, $fields, $settings);
             $javascript = $this->buildJavascript($validation);
 
-            $this->cache->save($model->id, $javascript);
+            $this->cache->save($model->id, $javascript, $this->locale);
         }
 
-        return $this->cache->filename($model->id);
+        return $this->cache->filename($model->id, $this->locale);
     }
 
     /**

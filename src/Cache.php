@@ -18,29 +18,50 @@ namespace Netzmacht\Contao\FormValidation;
  */
 class Cache
 {
+    const BASE_PATH = 'assets/js';
+
+    /**
+     * Contao file system.
+     *
+     * @var \Files
+     */
+    private $fileSystem;
+
+    /**
+     * Construct.
+     *
+     * @param \Files $fileSystem The file system.
+     */
+    public function __construct(\Files $fileSystem)
+    {
+        $this->fileSystem = $fileSystem;
+    }
+
     /**
      * Check if the form validation is cached.
      *
-     * @param int $formId The form id.
+     * @param int         $formId The form id.
+     * @param string|null $locale The locale.
      *
      * @return bool
      */
-    public function isCached($formId)
+    public function isCached($formId, $locale = null)
     {
-        return file_exists(TL_ROOT . '/' . $this->filename($formId));
+        return file_exists(TL_ROOT . '/' . $this->filename($formId, $locale));
     }
 
     /**
      * Cache the content and return the cache file.
      *
-     * @param int    $formId  The form id.
-     * @param string $content The javascript.
+     * @param int         $formId  The form id.
+     * @param string      $content The javascript.
+     * @param string|null $locale  The locale.
      *
      * @return string
      */
-    public function save($formId, $content)
+    public function save($formId, $content, $locale = null)
     {
-        $fileName = $this->filename($formId);
+        $fileName = $this->filename($formId, $locale);
         $file     = new \File($fileName);
 
         $file->write($content);
@@ -50,26 +71,49 @@ class Cache
     }
 
     /**
-     * Delete the cached config.
+     * Delete the cached config. If no locale is given the whole related cache is removed.
      *
-     * @param int $formId The form id.
+     * @param int         $formId The form id.
+     * @param string|null $locale The locale.
      *
      * @return void
      */
-    public function remove($formId)
+    public function remove($formId, $locale = null)
     {
-        \Files::getInstance()->delete($this->filename($formId));
+        if ($locale) {
+            $this->fileSystem->delete($this->filename($formId, $locale));
+        } else {
+            $pattern = sprintf(
+                '%s/%s/formvalidation-*-%s.js',
+                TL_ROOT,
+                static::BASE_PATH,
+                $formId
+            );
+
+            foreach (glob($pattern) as $path) {
+                $this->fileSystem->delete(substr($path, (strlen(TL_ROOT) + 1)));
+            }
+        }
     }
 
     /**
      * Generate the file name.
      *
-     * @param int $formId The form id.
+     * @param int         $formId The form id.
+     * @param string|null $locale The locale.
      *
      * @return string
      */
-    public function filename($formId)
+    public function filename($formId, $locale = null)
     {
-        return sprintf('assets/js/formvalidation-%s-%s.js', substr(md5('form-' . $formId), 0, 8), $formId);
+        $locale = $locale ?: 'en';
+
+        return sprintf(
+            '%s/formvalidation-%s-%s-%s.js',
+            static::BASE_PATH,
+            substr(md5('form-' . $formId . '-' . $locale), 0, 8),
+            $locale,
+            $formId
+        );
     }
 }

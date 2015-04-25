@@ -16,11 +16,17 @@ $container['form-validation.integration'] = $container->share(
         return new \Netzmacht\Contao\FormValidation\Integration(
             $container['form-validation.javascript-builder'],
             $container['form-validation.assembler'],
-            new \Netzmacht\Contao\FormValidation\Cache(),
+            $container['form-validation.cache'],
             \Config::get('fv_assetPath'),
             (array) $GLOBALS['FORMVALIDATION_FRAMEWORKS'],
             $container['form-validation.locale']
         );
+    }
+);
+
+$container['form-validation.cache'] = $container->share(
+    function () {
+        return new \Netzmacht\Contao\FormValidation\Cache(\Files::getInstance());
     }
 );
 

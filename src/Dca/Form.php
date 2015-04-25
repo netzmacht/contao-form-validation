@@ -11,10 +11,10 @@
 
 namespace Netzmacht\Contao\FormValidation\Dca;
 
-use Netzmacht\Contao\FormValidation\Cache;
 use Netzmacht\Contao\FormValidation\Model\ValidationModel;
 use Netzmacht\Contao\Toolkit\Dca;
 use Netzmacht\Contao\Toolkit\Dca\Options\OptionsBuilder;
+use Netzmacht\Contao\Toolkit\ServiceContainerTrait;
 
 /**
  * Dca helper for form data container.
@@ -23,6 +23,8 @@ use Netzmacht\Contao\Toolkit\Dca\Options\OptionsBuilder;
  */
 class Form
 {
+    use ServiceContainerTrait
+
     /**
      * Initialize the view.
      *
@@ -78,7 +80,7 @@ class Form
      */
     public function clearCache($dataContainer)
     {
-        $cache = new Cache();
+        $cache = $this->getService('form-validation.cache');
         $cache->remove($dataContainer->id);
     }
 }
