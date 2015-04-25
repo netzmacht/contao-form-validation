@@ -196,12 +196,10 @@ class Integration
      */
     private function buildJavascript($validation)
     {
-        $buffer  = sprintf('$(document).ready(function() { %s', $this->builder->encode($validation));
-        $buffer .= "\n" . ' $(\'#f1\').on(\'status.field.fv\', function (e, data) {
-        data.element.data(\'fv.messages\').find(\'.help-block.error\').hide();
-    });';
-        $buffer .= '});';
+        $template = new \FrontendTemplate('form_validation_js');
+        $template->validation = $validation;
+        $template->javascript = $this->builder->encode($validation);
 
-        return $buffer;
+        return $template->parse();
     }
 }

@@ -1,0 +1,8 @@
+$(document).ready(function () {
+    var validation = <?php echo $this->javascript; ?>
+
+    <?php /* Hide server side error messages */ ?>
+    validation.on('status.field.fv', function (e, data) {
+        data.element.data('fv.messages').find('p.error').hide();
+    });
+});
