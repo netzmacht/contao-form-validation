@@ -129,6 +129,7 @@ class Assembler
 
             $this->assembleStringLengthValidator($field, $model);
             $this->assembleFileValidator($field, $model);
+            $this->assemblePasswordValidators($validation, $field, $model);
         }
     }
 
@@ -223,6 +224,43 @@ class Assembler
             }
 
             $field->addValidator('file', $options);
+        }
+    }
+
+    /**
+     * Assemble the password validators.
+     *
+     * @param Validation      $validation Form validation.
+     * @param Field           $field      The validation field.
+     * @param \FormFieldModel $model      The field model.
+     *
+     * @return void
+     */
+    private function assemblePasswordValidators(Validation $validation, Field $field, $model)
+    {
+        if ($model->type !== 'password') {
+            return;
+        }
+
+        $minLength = \Config::get('minPasswordLength');
+        $confirm   = $validation->addField($model->name . '_confirm');
+
+        $confirm->addValidator(
+            'identical',
+            array(
+                'field'   => $model->name,
+                'message' => $GLOBALS['TL_LANG']['ERR']['passwordMatch']
+            )
+        );
+
+        if ($minLength) {
+            $options = array(
+                'trim' => true,
+                'min'  => $minLength
+            );
+
+            $field->addValidator('stringLength', $options);
+            $confirm->addValidator('stringLength', $options);
         }
     }
 }

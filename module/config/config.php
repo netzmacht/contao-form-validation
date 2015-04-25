@@ -43,7 +43,8 @@ $GLOBALS['FORMVALIDATION_WIDGETS'] = array(
     'checkbox',
     'radio',
     'upload',
-    'textarea'
+    'textarea',
+    'password'
 );
 
 $GLOBALS['FORMVALIDATION_LOCALES'] = array(
