@@ -491,6 +491,22 @@ class Validation implements ConvertsToJavascript
     }
 
     /**
+     * Get a field.
+     *
+     * @param string $name The field name.
+     *
+     * @return Field|null
+     */
+    public function getField($name)
+    {
+        if (isset($this->fields[$name])) {
+            return $this->fields[$name];
+        }
+
+        return null;
+    }
+
+    /**
      * Get formId.
      *
      * @return string

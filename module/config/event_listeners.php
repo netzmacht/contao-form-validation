@@ -11,7 +11,8 @@
 
 return array(
     \Netzmacht\Contao\FormValidation\Event\BuildValidationFieldEvent::NAME => array(
-        array($GLOBALS['container']['form-validation.assembler.field-assembler'], 'handle')
+        array(array($GLOBALS['container']['form-validation.assembler.field-assembler'], 'handle'), 100),
+        array(new \Netzmacht\Contao\FormValidation\Assembler\ValidatorAssembler(), 'handle'),
     ),
 
     \Netzmacht\Contao\FormValidation\Event\BuildValidationSettingEvent::NAME => array(

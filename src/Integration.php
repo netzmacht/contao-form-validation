@@ -158,33 +158,13 @@ class Integration
     protected function getValidationJavascript($model, $fields, $settings)
     {
         if (!$this->cache->isCached($model->id, $this->locale)) {
-            $validation = $this->buildValidation($model, $fields, $settings);
+            $validation = $this->assembler->assemble($model, $fields, $settings, $this->locale);
             $javascript = $this->buildJavascript($validation);
 
             $this->cache->save($model->id, $javascript, $this->locale);
         }
 
         return $this->cache->filename($model->id, $this->locale);
-    }
-
-    /**
-     * Build the validation.
-     *
-     * @param \FormModel        $model    The form model.
-     * @param \FormFieldModel[] $fields   The form fields.
-     * @param ValidationModel   $settings The validation settings.
-     *
-     * @return Validation
-     */
-    private function buildValidation($model, $fields, $settings)
-    {
-        $validation = $this->assembler->assemble($model, $fields, $settings);
-
-        if (!$validation->getLocale()) {
-            $validation->setLocale($this->locale);
-        }
-
-        return $validation;
     }
 
     /**

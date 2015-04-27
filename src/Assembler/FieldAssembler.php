@@ -30,20 +30,6 @@ class FieldAssembler
     private $supportedWidgets;
 
     /**
-     * Fields which supports the rgxp validation.
-     *
-     * @var array
-     */
-    private $rgxpWidgets = array('text', 'password', 'textarea', 'hidden');
-
-    /**
-     * Supported date formats.
-     *
-     * @var array
-     */
-    private $dateFormats = array('date', 'time', 'datim');
-
-    /**
      * Construct.
      *
      * @param array $supportedWidgets The supported widget.
@@ -69,12 +55,7 @@ class FieldAssembler
         }
 
         $validation = $event->getValidation();
-        $field      = $this->createField($validation, $fieldModel);
-
-        $this->assembleStringLengthValidator($field, $fieldModel);
-        $this->assembleFileValidator($field, $fieldModel);
-        $this->assemblePasswordValidators($validation, $field, $fieldModel);
-        $this->assembleDateValidator($field, $fieldModel);
+        $this->createField($validation, $fieldModel);
     }
 
     /**
@@ -137,166 +118,5 @@ class FieldAssembler
         if ($force || $model->$option) {
             $object->$method($model->$option);
         }
-    }
-
-    /**
-     * Assemble the string length validator.
-     *
-     * @param Field           $field The validation field.
-     * @param \FormFieldModel $model The field model.
-     *
-     * @return void
-     */
-    private function assembleStringLengthValidator(Field $field, $model)
-    {
-        if (($model->type === 'text' || $model->type === 'textarea') && ($model->minlength || $model->maxlength)) {
-            $options = array(
-                'trim' => true
-            );
-
-            if ($model->minlength > 0) {
-                $options['min'] = (int) $model->minlength;
-            }
-
-            if ($model->maxlength > 0) {
-                $options['max'] = (int) $model->maxlength;
-            }
-
-            $field->addValidator('stringLength', $options);
-        }
-    }
-
-    /**
-     * Assemble the file validator for upload widgets.
-     *
-     * @param Field           $field The validation field.
-     * @param \FormFieldModel $model The field model.
-     *
-     * @return void
-     */
-    private function assembleFileValidator(Field $field, $model)
-    {
-        if ($model->type === 'upload') {
-            $options = array('maxFiles' => 1);
-
-            if ($model->extensions) {
-                $options['extension'] = $model->extensions;
-            }
-
-            if ($model->maxlength > 0) {
-                $options['maxSize'] = (int) $model->maxlength;
-            }
-
-            $field->addValidator('file', $options);
-        }
-    }
-
-    /**
-     * Assemble the password validators.
-     *
-     * @param Validation      $validation Form validation.
-     * @param Field           $field      The validation field.
-     * @param \FormFieldModel $model      The field model.
-     *
-     * @return void
-     * @SuppressWarnings(PHPMD.Superglobals)
-     */
-    private function assemblePasswordValidators(Validation $validation, Field $field, $model)
-    {
-        if ($model->type !== 'password') {
-            return;
-        }
-
-        $minLength = \Config::get('minPasswordLength');
-        $confirm   = $validation->addField($model->name . '_confirm');
-
-        $confirm->addValidator(
-            'identical',
-            array(
-                'field'   => $model->name,
-                'message' => $GLOBALS['TL_LANG']['ERR']['passwordMatch']
-            )
-        );
-
-        if ($minLength) {
-            $options = array(
-                'trim' => true,
-                'min'  => $minLength
-            );
-
-            $field->addValidator('stringLength', $options);
-            $confirm->addValidator('stringLength', $options);
-        }
-    }
-
-    /**
-     * Assemble the file validator for upload widgets.
-     *
-     * @param Field           $field The validation field.
-     * @param \FormFieldModel $model The field model.
-     *
-     * @return void
-     */
-    private function assembleDateValidator(Field $field, \FormFieldModel $model)
-    {
-        if (!in_array($model->type, $this->rgxpWidgets) || !in_array($model->rgxp, $this->dateFormats)) {
-            return;
-        }
-
-        $dateFormat = $this->convertDateFormat(\Config::get($model->rgxp . 'Format'));
-
-        if ($dateFormat !== false) {
-            $field->addValidator('date', array('format' => $dateFormat));
-        }
-    }
-
-    /**
-     * Convert a given date format.
-     *
-     * @param string $format The php date format.
-     *
-     * @return bool
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     */
-    private function convertDateFormat($format)
-    {
-        $converted = '';
-        $length    = strlen($format);
-
-        for ($pos = 0; $length > $pos; $pos++) {
-            switch ($format[$pos]) {
-                case 'd':
-                    $converted .= 'DD';
-                    break;
-
-                case 'm':
-                    $converted .= 'MM';
-                    break;
-
-                case 'Y':
-                    $converted .= 'YYYY';
-                    break;
-
-                case 'i':
-                    $converted .= 'm';
-                    break;
-
-                case 'h':
-                case 's':
-                case '.':
-                case ' ':
-                case '|':
-                case '/':
-                case '-':
-                    $converted .= $format[$pos];
-                    break;
-
-                default:
-                    // unsupported format.
-                    return false;
-            }
-        }
-
-        return $converted;
     }
 }

@@ -43,17 +43,20 @@ class Assembler
     /**
      * Assemble the form validation.
      *
-     * @param \FormModel        $formModel The form model.
-     * @param \FormFieldModel[] $fields    The form fields.
-     * @param ValidationModel   $settings  The validation model.
+     * @param \FormModel        $formModel     The form model.
+     * @param \FormFieldModel[] $fields        The form fields.
+     * @param ValidationModel   $settings      The validation model.
+     * @param string|null       $defaultLocale The default locale.
      *
      * @return Validation
      */
-    public function assemble($formModel, $fields, $settings)
+    public function assemble($formModel, $fields, $settings, $defaultLocale = null)
     {
         $cssId      = deserialize($formModel->cssID, true);
         $formId     = $cssId[0] ?: ('f' . $formModel->id);
         $validation = new Validation($formId);
+
+        $validation->setLocale($defaultLocale);
 
         $event = new BuildValidationSettingEvent($validation, $formModel, $settings);
         $this->eventDispatcher->dispatch($event::NAME, $event);
