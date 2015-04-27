@@ -21,7 +21,7 @@ Features
  * Automatically create frontend validators for:
     - upload file (extensions and file size)
     - password (min length of password field, compare passwords)
-    - date formats (date, datim, time)
+    - date formats (date, datim)
     - phone validator (formvalidation.io does not support input type tel.).
     - string length validation (min length, max length)
 

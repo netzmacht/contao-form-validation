@@ -35,7 +35,7 @@ class ValidatorAssembler
      *
      * @var array
      */
-    private $dateFormats = array('date', 'time', 'datim');
+    private $dateFormats = array('date', 'datim');
 
     /**
      * Rgxp expression validator mappings.
