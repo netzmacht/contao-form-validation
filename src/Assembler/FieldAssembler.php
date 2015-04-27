@@ -55,10 +55,7 @@ class FieldAssembler
         }
 
         $validation = $event->getValidation();
-
-        if ($fieldModel->fv_enabled !== 'default') {
-            $this->createField($validation, $fieldModel);
-        }
+        $this->createField($validation, $fieldModel);
     }
 
     /**
@@ -75,7 +72,9 @@ class FieldAssembler
 
         if ($model->fv_enabled === 'disabled') {
             $field->setEnabled(false);
+        }
 
+        if ($model->fv_enabled !== 'custom') {
             return $field;
         }
 
