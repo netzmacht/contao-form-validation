@@ -16,6 +16,14 @@ Features
  * Client side form validation using [http://formvalidation.io/](http://formvalidation.io/). This is an commercial
    library supporting well known frameworks like Bootstrap, foundation. It is **NOT** included in this extension and has
    to be purchased and installed by its own.
+ * formvalidation.io supports html5 form validation. Since Contao supports html5 form field widgets most validators
+   work out of the box.
+ * Automatically create frontend validators for:
+    - upload file (extensions and file size)
+    - password (min length of password field, compare passwords)
+    - date formats (date, datim, time)
+    - phone validator (formvalidation.io does not support input type tel.).
+    - string length validation (min length, max length)
 
 Following features are planned:
  * Support default Contao 3.4 form syntax
