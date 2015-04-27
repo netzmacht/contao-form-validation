@@ -11,7 +11,10 @@
 
 namespace Netzmacht\Contao\FormValidation;
 
+use Netzmacht\Contao\FormValidation\Event\BuildValidationFieldEvent;
+use Netzmacht\Contao\FormValidation\Event\BuildValidationSettingEvent;
 use Netzmacht\Contao\FormValidation\Model\ValidationModel;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatcher;
 
 /**
  * Assembler takes the form configuration and creates the validation object.
@@ -21,247 +24,45 @@ use Netzmacht\Contao\FormValidation\Model\ValidationModel;
 class Assembler
 {
     /**
-     * Supported validation widgets.
+     * The event dispatcher.
      *
-     * @var array
+     * @var EventDispatcher
      */
-    private $widgets;
+    private $eventDispatcher;
 
     /**
      * Construct.
      *
-     * @param array $supportedWidgets List of supported widgets.
+     * @param EventDispatcher $eventDispatcher The event dispatcher.
      */
-    public function __construct($supportedWidgets)
+    public function __construct(EventDispatcher $eventDispatcher)
     {
-        $this->widgets = $supportedWidgets;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
      * Assemble the form validation.
      *
-     * @param \FormModel        $model    The form model.
-     * @param \FormFieldModel[] $fields   The form fields.
-     * @param ValidationModel   $settings The validation model.
+     * @param \FormModel        $formModel The form model.
+     * @param \FormFieldModel[] $fields    The form fields.
+     * @param ValidationModel   $settings  The validation model.
      *
      * @return Validation
      */
-    public function assemble($model, $fields, $settings)
+    public function assemble($formModel, $fields, $settings)
     {
-        $cssId      = deserialize($model->cssID, true);
-        $formId     = $cssId[0] ?: ('f' . $model->id);
+        $cssId      = deserialize($formModel->cssID, true);
+        $formId     = $cssId[0] ?: ('f' . $formModel->id);
         $validation = new Validation($formId);
 
-        $this->assembleSettings($validation, $settings);
-        $this->assembleFields($validation, $fields);
+        $event = new BuildValidationSettingEvent($validation, $formModel, $settings);
+        $this->eventDispatcher->dispatch($event::NAME, $event);
+
+        foreach ($fields as $model) {
+            $event = new BuildValidationFieldEvent($validation, $formModel, $model);
+            $this->eventDispatcher->dispatch($event::NAME, $event);
+        }
 
         return $validation;
-    }
-
-    /**
-     * Assemble form settings.
-     *
-     * @param Validation      $validation The form validation.
-     * @param ValidationModel $settings   The validation model.
-     *
-     * @return void
-     */
-    private function assembleSettings(Validation $validation, $settings)
-    {
-        if ($settings->button_selector || $settings->button_disabled) {
-            $validation->setButton($settings->button_selector, $settings->button_disabled);
-        }
-
-        if ($settings->err_class || $settings->err_container) {
-            $validation->setError($settings->err_class, $settings->err_container ?: null);
-        }
-
-        $this->assembleIcon($validation, $settings, Validation::ICON_VALID);
-        $this->assembleIcon($validation, $settings, Validation::ICON_INVALID);
-        $this->assembleIcon($validation, $settings, Validation::ICON_VALIDATING);
-
-        foreach (deserialize($settings->excluded, true) as $excluded) {
-            $validation->addExcluded($excluded);
-        }
-
-        $validation->setAutoFocus($settings->autofocus);
-    }
-
-    /**
-     * Assemble validations for the form fields.
-     *
-     * @param Validation        $validation The form validation.
-     * @param \FormFieldModel[] $fields     The form fields.
-     *
-     * @return void
-     */
-    private function assembleFields(Validation $validation, $fields)
-    {
-        foreach ($fields as $model) {
-            if (!in_array($model->type, $this->widgets) || !$model->fv_enabled) {
-                continue;
-            }
-
-            $field = $validation->addField($model->name)
-                ->setAutoFocus($model->fv_autofocus)
-                ->setIcon($model->fv_icon)
-                ->setVerbose($model->fv_verbose);
-
-            foreach (array('message', 'selector') as $option) {
-                $this->assembleOption($field, $model, $option, true);
-            }
-
-            if ($model->fv_advanced) {
-                $this->assembleOption($field, $model, 'row', true);
-
-                if (is_numeric($model->fv_threshold)) {
-                    $field->setThreshold($model->fv_threshold);
-                }
-
-                if ($model->fv_err) {
-                    if ($model->fv_err === 'selector') {
-                        $field->setErr($model->fv_err_selector);
-                    } else {
-                        $field->setErr($model->fv_err);
-                    }
-                }
-            }
-
-            $this->assembleStringLengthValidator($field, $model);
-            $this->assembleFileValidator($field, $model);
-            $this->assemblePasswordValidators($validation, $field, $model);
-        }
-    }
-
-    /**
-     * Assemble icon setting.
-     *
-     * @param Validation      $validation The validation object.
-     * @param ValidationModel $setting    The validation model.
-     * @param string          $icon       The icon.
-     *
-     * @return void
-     */
-    private function assembleIcon(Validation $validation, $setting, $icon)
-    {
-        $property = 'icon_' . $icon;
-
-        if ($setting->$property) {
-            $validation->setIcon($icon, $setting->$property);
-        }
-    }
-
-    /**
-     * Assemble an option.
-     *
-     * @param mixed  $object The object.
-     * @param \Model $model  The model.
-     * @param string $option The option name.
-     * @param bool   $prefix Should the fv_ prefix be added.
-     * @param bool   $force  Force setting of option. Otherwise check if not empty.
-     *
-     * @return void
-     */
-    private function assembleOption($object, $model, $option, $prefix = false, $force = false)
-    {
-        $method = 'set' . ucfirst($option);
-
-        if ($prefix) {
-            $option = 'fv_' . $option;
-        }
-
-        if ($force || $model->$option) {
-            $object->$method($model->$option);
-        }
-    }
-
-    /**
-     * Assemble the string length validator.
-     *
-     * @param Field           $field The validation field.
-     * @param \FormFieldModel $model The field model.
-     *
-     * @return void
-     */
-    private function assembleStringLengthValidator(Field $field, $model)
-    {
-        if (($model->type === 'text' || $model->type === 'textarea') && ($model->minlength || $model->maxlength)) {
-            $options = array(
-                'trim' => true
-            );
-
-            if ($model->minlength > 0) {
-                $options['min'] = (int) $model->minlength;
-            }
-
-            if ($model->maxlength > 0) {
-                $options['max'] = (int) $model->maxlength;
-            }
-
-            $field->addValidator('stringLength', $options);
-        }
-    }
-
-    /**
-     * Assemble the file validator for upload widgets.
-     *
-     * @param Field           $field The validation field.
-     * @param \FormFieldModel $model The field model.
-     *
-     * @return void
-     */
-    private function assembleFileValidator(Field $field, $model)
-    {
-        if ($model->type === 'upload') {
-            $options = array('maxFiles' => 1);
-
-            if ($model->extensions) {
-                $options['extension'] = $model->extensions;
-            }
-
-            if ($model->maxlength > 0) {
-                $options['maxSize'] = (int) $model->maxlength;
-            }
-
-            $field->addValidator('file', $options);
-        }
-    }
-
-    /**
-     * Assemble the password validators.
-     *
-     * @param Validation      $validation Form validation.
-     * @param Field           $field      The validation field.
-     * @param \FormFieldModel $model      The field model.
-     *
-     * @return void
-     * @SuppressWarnings(PHPMD.Superglobals)
-     */
-    private function assemblePasswordValidators(Validation $validation, Field $field, $model)
-    {
-        if ($model->type !== 'password') {
-            return;
-        }
-
-        $minLength = \Config::get('minPasswordLength');
-        $confirm   = $validation->addField($model->name . '_confirm');
-
-        $confirm->addValidator(
-            'identical',
-            array(
-                'field'   => $model->name,
-                'message' => $GLOBALS['TL_LANG']['ERR']['passwordMatch']
-            )
-        );
-
-        if ($minLength) {
-            $options = array(
-                'trim' => true,
-                'min'  => $minLength
-            );
-
-            $field->addValidator('stringLength', $options);
-            $confirm->addValidator('stringLength', $options);
-        }
     }
 }

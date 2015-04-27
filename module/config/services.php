@@ -31,10 +31,14 @@ $container['form-validation.cache'] = $container->share(
 );
 
 $container['form-validation.assembler'] = $container->share(
-    function () {
-        return new \Netzmacht\Contao\FormValidation\Assembler((array) $GLOBALS['FORMVALIDATION_WIDGETS']);
+    function ($container) {
+        return new \Netzmacht\Contao\FormValidation\Assembler($container['event-dispatcher']);
     }
 );
+
+$container['form-validation.assembler.field-assembler'] = function ($container) {
+    return new \Netzmacht\Contao\FormValidation\Assembler\FieldAssembler((array) $GLOBALS['FORMVALIDATION_WIDGETS']);
+};
 
 $container['form-validation.javascript-builder'] = $container->share(
     function () {
