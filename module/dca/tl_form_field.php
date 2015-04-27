@@ -12,7 +12,7 @@
 /*
  * Config.
  */
-$GLOBALS['TL_DCA']['tl_form_field']['config']['onload_callback'][] = array(
+$GLOBALS['TL_DCA']['tl_form_field']['config']['palettes_callback'][] = array(
     'Netzmacht\Contao\FormValidation\Dca\FormField',
     'addFormValidationToPalette'
 );
@@ -31,20 +31,20 @@ $GLOBALS['TL_DCA']['tl_form_field']['config']['ondelete_callback'][] = array(
 /*
  * Palettes.
  */
-$GLOBALS['TL_DCA']['tl_form_field']['metasubpalettes']['fv_enabled'] = array(
+$GLOBALS['TL_DCA']['tl_form_field']['metasubpalettes']['fv_advanced'] = array(
+    'fv_row',
+    'fv_threshold',
+    'fv_trigger',
+    'fv_err',
+);
+
+$GLOBALS['TL_DCA']['tl_form_field']['metasubselectpalettes']['fv_enabled']['custom'] = array(
     'fv_autofocus',
     'fv_selector',
     'fv_message',
     'fv_icon',
     'fv_verbose',
     'fv_advanced'
-);
-
-$GLOBALS['TL_DCA']['tl_form_field']['metasubpalettes']['fv_advanced'] = array(
-    'fv_row',
-    'fv_threshold',
-    'fv_trigger',
-    'fv_err',
 );
 
 $GLOBALS['TL_DCA']['tl_form_field']['metasubselectpalettes']['fv_err']['selector'] = array(
@@ -62,7 +62,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_autofocus'] = array
     'exclude'   => true,
     'default'   => true,
     'eval'      => array(
-        'tl_class' => 'w50',
+        'tl_class' => 'w50 m12',
     ),
     'sql'       => "char(1) NOT NULL default ''"
 );
@@ -70,14 +70,15 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_autofocus'] = array
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_enabled'] = array
 (
     'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['fv_enabled'],
-    'inputType' => 'checkbox',
+    'inputType' => 'select',
     'exclude'   => true,
-    'default'   => true,
+    'default'   => 'default',
+    'options'   => array('default', 'custom', 'disabled'),
     'eval'      => array(
         'tl_class'       => 'w50',
         'submitOnChange' => true,
     ),
-    'sql'       => "char(1) NOT NULL default ''"
+    'sql'       => "char(8) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['fv_message'] = array(

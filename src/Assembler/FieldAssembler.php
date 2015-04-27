@@ -55,7 +55,10 @@ class FieldAssembler
         }
 
         $validation = $event->getValidation();
-        $this->createField($validation, $fieldModel);
+
+        if ($fieldModel->fv_enabled !== 'default') {
+            $this->createField($validation, $fieldModel);
+        }
     }
 
     /**
@@ -68,7 +71,15 @@ class FieldAssembler
      */
     private function createField(Validation $validation, $model)
     {
-        $field = $validation->addField($model->name)
+        $field = $validation->addField($model->name);
+
+        if ($model->fv_enabled === 'disabled') {
+            $field->setEnabled(false);
+
+            return $field;
+        }
+
+        $field
             ->setAutoFocus($model->fv_autofocus)
             ->setIcon($model->fv_icon)
             ->setVerbose($model->fv_verbose);
