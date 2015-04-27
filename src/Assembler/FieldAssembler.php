@@ -30,6 +30,20 @@ class FieldAssembler
     private $supportedWidgets;
 
     /**
+     * Fields which supports the rgxp validation.
+     *
+     * @var array
+     */
+    private $rgxpWidgets = array('text', 'password', 'textarea', 'hidden');
+
+    /**
+     * Supported date formats.
+     *
+     * @var array
+     */
+    private $dateFormats = array('date', 'time', 'datim');
+
+    /**
      * Construct.
      *
      * @param array $supportedWidgets The supported widget.
@@ -60,6 +74,7 @@ class FieldAssembler
         $this->assembleStringLengthValidator($field, $fieldModel);
         $this->assembleFileValidator($field, $fieldModel);
         $this->assemblePasswordValidators($validation, $field, $fieldModel);
+        $this->assembleDateValidator($field, $fieldModel);
     }
 
     /**
@@ -212,5 +227,76 @@ class FieldAssembler
             $field->addValidator('stringLength', $options);
             $confirm->addValidator('stringLength', $options);
         }
+    }
+
+    /**
+     * Assemble the file validator for upload widgets.
+     *
+     * @param Field           $field The validation field.
+     * @param \FormFieldModel $model The field model.
+     *
+     * @return void
+     */
+    private function assembleDateValidator(Field $field, \FormFieldModel $model)
+    {
+        if (!in_array($model->type, $this->rgxpWidgets) || !in_array($model->rgxp, $this->dateFormats)) {
+            return;
+        }
+
+        $dateFormat = $this->convertDateFormat(\Config::get($model->rgxp . 'Format'));
+
+        if ($dateFormat !== false) {
+            $field->addValidator('date', array('format' => $dateFormat));
+        }
+    }
+
+    /**
+     * Convert a given date format.
+     *
+     * @param string $format The php date format.
+     *
+     * @return bool
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     */
+    private function convertDateFormat($format)
+    {
+        $converted = '';
+        $length    = strlen($format);
+
+        for ($pos = 0; $length > $pos; $pos++) {
+            switch ($format[$pos]) {
+                case 'd':
+                    $converted .= 'DD';
+                    break;
+
+                case 'm':
+                    $converted .= 'MM';
+                    break;
+
+                case 'Y':
+                    $converted .= 'YYYY';
+                    break;
+
+                case 'i':
+                    $converted .= 'm';
+                    break;
+
+                case 'h':
+                case 's':
+                case '.':
+                case ' ':
+                case '|':
+                case '/':
+                case '-':
+                    $converted .= $format[$pos];
+                    break;
+
+                default:
+                    // unsupported format.
+                    return false;
+            }
+        }
+
+        return $converted;
     }
 }
