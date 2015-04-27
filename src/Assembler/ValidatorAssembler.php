@@ -58,7 +58,7 @@ class ValidatorAssembler
     {
         $validation = $event->getValidation();
         $fieldModel = $event->getFieldModel();
-        $field      = $validation->getField($fieldModel->type);
+        $field      = $validation->getField($fieldModel->name);
 
         if ($field) {
             $this->assembleFormatValidator($field, $fieldModel);
