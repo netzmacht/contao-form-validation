@@ -72,6 +72,9 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['fv_setting'] = array
     'options_callback' => array(
         'Netzmacht\Contao\FormValidation\Dca\Form', 'getSettings'
     ),
+    'save_callback' => array(
+        array('Netzmacht\Contao\FormValidation\Dca\Form', 'addIncompleteWarning')
+    ),
     'wizard' => array(
         \Netzmacht\Contao\Toolkit\Dca::createPopupWizardCallback(
             'do=form&amp;table=tl_form_validation',

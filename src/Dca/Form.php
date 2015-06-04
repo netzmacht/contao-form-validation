@@ -59,6 +59,24 @@ class Form
     }
 
     /**
+     * Add warning if the assets path is not set.
+     *
+     * @param mixed $value The value.
+     *
+     * @return mixed
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    public function addIncompleteWarning($value)
+    {
+        if ($value && !\Config::get('fv_assetPath')) {
+            \Message::addError($GLOBALS['TL_LANG']['tl_form']['fv_incompleteWarning']);
+        }
+
+        return $value;
+    }
+
+    /**
      * Clear the cached form when form changed.
      *
      * @param \DataContainer $dataContainer The data container driver.
