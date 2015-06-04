@@ -26,19 +26,6 @@ class Form
     use ServiceContainerTrait;
 
     /**
-     * Initialize the view.
-     *
-     * @return void
-     * @SuppressWarnings(PHPMD.Superglobals)
-     */
-    public function initializeView()
-    {
-        if (\Input::get('popup')) {
-            unset($GLOBALS['TL_DCA']['tl_form_validation']['list']['global_operations']['form']);
-        }
-    }
-
-    /**
      * Get framework options.
      *
      * Contao forms are only supported of Contao 3.3 with the new form widget style.

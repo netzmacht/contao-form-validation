@@ -23,6 +23,19 @@ class Validation
     use ServiceContainerTrait;
 
     /**
+     * Initialize the view.
+     *
+     * @return void
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    public function initializeView()
+    {
+        if (\Input::get('popup')) {
+            unset($GLOBALS['TL_DCA']['tl_form_validation']['list']['global_operations']['form']);
+        }
+    }
+
+    /**
      * Clear the cache of the forms when a validation setting has changed.
      *
      * @param \DataContainer $dataContainer The data container.

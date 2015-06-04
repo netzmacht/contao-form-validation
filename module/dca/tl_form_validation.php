@@ -15,7 +15,7 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
         'dataContainer'    => 'Table',
         'enableVersioning' => true,
         'onload_callback'  => array(
-            array('Netzmacht\Contao\FormValidation\Dca\Form', 'initializeView'),
+            array('Netzmacht\Contao\FormValidation\Dca\Validation', 'initializeView'),
         ),
         'onsubmit_callback'  => array(
             array('Netzmacht\Contao\FormValidation\Dca\Validation', 'clearCache'),
