@@ -51,6 +51,7 @@ class SettingsAssembler
         }
 
         $validation->setAutoFocus($settings->autofocus);
+        $validation->setLive($settings->live);
     }
 
     /**

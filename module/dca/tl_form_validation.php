@@ -144,7 +144,7 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
                 'tl_class' => 'w50',
                 'choosen'  => true,
             ),
-            'sql'       => "char(1) NOT NULL default ''"
+            'sql'       => "varchar(10) NOT NULL default ''"
         ),
 
         'autofocus' => array
