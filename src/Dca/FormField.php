@@ -40,6 +40,10 @@ class FormField
                 'formvalidation' => array('fv_enabled')
             ));
         }
+
+        if (isset($GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox'])) {
+            MetaPalettes::appendFields('tl_form_field', 'checkbox', 'expert', array('minlength', 'maxlength'));
+        }
     }
 
     /**

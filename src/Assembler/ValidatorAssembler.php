@@ -223,19 +223,48 @@ class ValidatorAssembler extends AssemblerBase
      * @param \FormFieldModel $model The field model.
      *
      * @return void
+     * @SuppressWarnings(PHPMD.Superglobals)
      */
     private function assembleCheckboxRequiredValidator(Field $field, \FormFieldModel $model)
     {
         if ($model->type === 'checkbox' && $model->mandatory) {
-            $errorKey = $model->label ? 'mandatory' : 'mdtryNoLabel';
+            if ($model->minlength > 0) {
+                $options = array('min' => (int) $model->minlength);
 
-            $field->addValidator(
-                'choice',
-                array(
-                    'min'     => 1,
-                    'message' => sprintf($GLOBALS['TL_LANG']['ERR'][$errorKey], $model->label)
-                )
-            );
+                if ($model->maxlength > 0) {
+                    $options['message'] = sprintf(
+                        $GLOBALS['TL_LANG']['ERR']['between'],
+                        $model->label,
+                        $model->minlength,
+                        $model->maxlength
+                    );
+                } else {
+                    $options['message'] = sprintf(
+                        $GLOBALS['TL_LANG']['ERR']['minoption'],
+                        $model->label,
+                        $model->minlength
+                    );
+                }
+            } else {
+                $options = array('min' => 1);
+
+                if ($model->maxlength > 0) {
+                    $options['message'] = sprintf(
+                        $GLOBALS['TL_LANG']['ERR']['maxoption'],
+                        $model->label,
+                        $model->maxlength
+                    );
+                } else {
+                    $errorKey           = $model->label ? 'mandatory' : 'mdtryNoLabel';
+                    $options['message'] = sprintf($GLOBALS['TL_LANG']['ERR'][$errorKey], $model->label);
+                }
+            }
+
+            if ($model->maxlength > 0) {
+                $options['max'] = (int) $model->maxlength;
+            }
+
+            $field->addValidator('choice', $options);
         }
     }
 }
