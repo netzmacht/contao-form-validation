@@ -157,7 +157,7 @@ class Integration
      */
     protected function getValidationJavascript($model, $fields, $settings)
     {
-        if (!$this->cache->isCached($model->id, $this->locale)) {
+        if (!$this->cache->isCached($model->id, $this->locale) || \Config::get('bypassCache')) {
             $validation = $this->assembler->assemble($model, $fields, $settings, $this->locale);
             $javascript = $this->buildJavascript($validation);
 
