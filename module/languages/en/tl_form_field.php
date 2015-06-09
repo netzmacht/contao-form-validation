@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * @package    contao-form-validation
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2015 netzmacht creative David Molineus
+ * @license    LGPL 3.0
+ * @filesource
+ *
+ */
+
 $GLOBALS['TL_LANG']['tl_form_field']['formvalidation_legend'] = 'Client side validation';
 
 $GLOBALS['TL_LANG']['tl_form_field']['fv_enabled'][0]      = 'Enable validation';
