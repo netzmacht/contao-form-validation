@@ -21,7 +21,7 @@ use Netzmacht\Contao\FormValidation\Validation;
  *
  * @package Netzmacht\Contao\FormValidation\Assembler
  */
-class ValidatorAssembler
+class ValidatorAssembler extends AssemblerBase
 {
     /**
      * Fields which supports the rgxp validation.
@@ -58,11 +58,12 @@ class ValidatorAssembler
     {
         $validation = $event->getValidation();
         $fieldModel = $event->getFieldModel();
-        $field      = $validation->getField($fieldModel->name);
+        $field      = $validation->getField($this->getFieldIdentifier($fieldModel));
 
         if ($field) {
             $this->assembleFormatValidator($field, $fieldModel);
             $this->assembleStringLengthValidator($field, $fieldModel);
+            $this->assembleCheckboxRequiredValidator($field, $fieldModel);
             $this->assembleFileValidator($field, $fieldModel);
             $this->assemblePasswordValidators($validation, $field, $fieldModel);
             $this->assembleDateValidator($field, $fieldModel);
@@ -212,6 +213,29 @@ class ValidatorAssembler
     {
         if (in_array($model->type, $this->rgxpWidgets) && isset($this->rgxpFormatsValidators[$model->type])) {
             $field->addValidator($this->rgxpFormatsValidators[$model->type], array());
+        }
+    }
+
+    /**
+     * Assemble the format validator.
+     *
+     * @param Field           $field The validation field.
+     * @param \FormFieldModel $model The field model.
+     *
+     * @return void
+     */
+    private function assembleCheckboxRequiredValidator(Field $field, \FormFieldModel $model)
+    {
+        if ($model->type === 'checkbox' && $model->mandatory) {
+            $errorKey = $model->label ? 'mandatory' : 'mdtryNoLabel';
+
+            $field->addValidator(
+                'choice',
+                array(
+                    'min'     => 1,
+                    'message' => sprintf($GLOBALS['TL_LANG']['ERR'][$errorKey], $model->label)
+                )
+            );
         }
     }
 }

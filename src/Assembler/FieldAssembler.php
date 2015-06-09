@@ -20,7 +20,7 @@ use Netzmacht\Contao\FormValidation\Validation;
  *
  * @package Netzmacht\Contao\FormValidation\Assembler
  */
-class FieldAssembler
+class FieldAssembler extends AssemblerBase
 {
     /**
      * List of supported widget types.
@@ -68,7 +68,7 @@ class FieldAssembler
      */
     private function createField(Validation $validation, $model)
     {
-        $field = $validation->addField($model->name);
+        $field = $validation->addField($this->getFieldIdentifier($model));
 
         if ($model->fv_enabled === 'disabled') {
             $field->setEnabled(false);
