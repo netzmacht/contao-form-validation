@@ -31,7 +31,7 @@ abstract class AssemblerBase
 
         if ($model->type === 'select' && $model->multiple) {
             $name .= '[]';
-        } elseif($model->type === 'checkbox') {
+        } elseif ($model->type === 'checkbox') {
             $name .= '[]';
         }
 
