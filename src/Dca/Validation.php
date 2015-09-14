@@ -47,7 +47,7 @@ class Validation
         $collection = \FormModel::findBy(['fv_active=1', 'fv_setting=?'], $dataContainer->id);
 
         if ($collection) {
-            $cache = $this->getService('form-validation.cache');
+            $cache = $this->getServiceContainer()->getService('form-validation.cache');
 
             foreach ($collection as $form) {
                 $cache->remove($form->id);

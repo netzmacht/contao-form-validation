@@ -55,7 +55,7 @@ class FormField
      */
     public function clearCache($dataContainer)
     {
-        $cache = $this->getService('form-validation.cache');
+        $cache = $this->getServiceContainer()->getService('form-validation.cache');
         $cache->remove($dataContainer->activeRecord->pid);
     }
 }
