@@ -11,8 +11,9 @@
 
 namespace Netzmacht\Contao\FormValidation\Dca;
 
+use Netzmacht\Contao\FormValidation\Cache;
 use Netzmacht\Contao\Toolkit\Dca\Callback\Callbacks;
-use Netzmacht\Contao\Toolkit\ServiceContainerTrait;
+use Netzmacht\Contao\Toolkit\Dca\Manager;
 
 /**
  * Validation data container helper class.
@@ -33,7 +34,27 @@ class Validation extends Callbacks
      *
      * @var string
      */
-    protected static $serviceName = 'form-validation.dca.form';
+    protected static $serviceName = 'form-validation.dca.validation';
+
+    /**
+     * Cache.
+     *
+     * @var Cache
+     */
+    private $cache;
+
+    /**
+     * Form constructor.
+     *
+     * @param Manager $dcaManager Data container manager.
+     * @param Cache   $cache      Form validation cache.
+     */
+    public function __construct(Manager $dcaManager, Cache $cache)
+    {
+        parent::__construct($dcaManager);
+
+        $this->cache = $cache;
+    }
 
     /**
      * Initialize the view.
@@ -60,10 +81,8 @@ class Validation extends Callbacks
         $collection = \FormModel::findBy(['fv_active=1', 'fv_setting=?'], $dataContainer->id);
 
         if ($collection) {
-            $cache = $this->getServiceContainer()->getService('form-validation.cache');
-
             foreach ($collection as $form) {
-                $cache->remove($form->id);
+                $this->cache->remove($form->id);
             }
         }
     }

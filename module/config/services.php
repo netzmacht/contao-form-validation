@@ -107,10 +107,11 @@ $container['form-validation.dca.form-field'] = $container->share(
     }
 );
 
-$container['form-validation.dca.form'] = $container->share(
+$container['form-validation.dca.validation'] = $container->share(
     function ($container) {
         return new Validation(
-            $container[Services::DCA_MANAGER]
+            $container[Services::DCA_MANAGER],
+            $container['form-validation.cache']
         );
     }
 );
