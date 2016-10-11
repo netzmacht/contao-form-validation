@@ -36,7 +36,7 @@ Install
 You can install this extension using composer:
 
 ```
-$ php composer.phar require netzmacht/contao-form-validation:~1.0
+$ php composer.phar require netzmacht/contao-form-validation:~2.0
 ```
 
 After installing, do following steps:
