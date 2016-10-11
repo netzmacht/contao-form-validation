@@ -22,7 +22,7 @@ use Netzmacht\Contao\Toolkit\Dca\Options\OptionsBuilder;
  *
  * @package Netzmacht\Contao\FormValidation\Dca
  */
-class Form extends Dca\Callback\Callbacks
+class FormCallbacks extends Dca\Callback\Callbacks
 {
     /**
      * Name of the data container.

@@ -20,7 +20,7 @@ use Netzmacht\Contao\Toolkit\Dca\Manager;
  *
  * @package Netzmacht\Contao\FormValidation\Dca
  */
-class Validation extends Callbacks
+class ValidationCallbacks extends Callbacks
 {
     /**
      * Name of the data container.

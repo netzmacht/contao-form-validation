@@ -12,9 +12,9 @@
 use Netzmacht\Contao\FormValidation\Assembler;
 use Netzmacht\Contao\FormValidation\Assembler\FieldAssembler;
 use Netzmacht\Contao\FormValidation\Cache;
-use Netzmacht\Contao\FormValidation\Dca\Form;
-use Netzmacht\Contao\FormValidation\Dca\FormField;
-use Netzmacht\Contao\FormValidation\Dca\Validation;
+use Netzmacht\Contao\FormValidation\Dca\FormCallbacks;
+use Netzmacht\Contao\FormValidation\Dca\FormFieldCallbacks;
+use Netzmacht\Contao\FormValidation\Dca\ValidationCallbacks;
 use Netzmacht\Contao\FormValidation\Integration;
 use Netzmacht\Contao\Toolkit\DependencyInjection\Services;
 use Netzmacht\JavascriptBuilder\Builder;
@@ -90,7 +90,7 @@ $container['form-validation.locale'] = function ($container) {
 
 $container['form-validation.dca.form'] = $container->share(
     function ($container) {
-        return new Form(
+        return new FormCallbacks(
             $container[Services::DCA_MANAGER],
             $container['form-validation.cache'],
             $GLOBALS['FORMVALIDATION_FRAMEWORKS']
@@ -100,7 +100,7 @@ $container['form-validation.dca.form'] = $container->share(
 
 $container['form-validation.dca.form-field'] = $container->share(
     function ($container) {
-        return new FormField(
+        return new FormFieldCallbacks(
             $container[Services::DCA_MANAGER],
             $container['form-validation.cache']
         );
@@ -109,7 +109,7 @@ $container['form-validation.dca.form-field'] = $container->share(
 
 $container['form-validation.dca.validation'] = $container->share(
     function ($container) {
-        return new Validation(
+        return new ValidationCallbacks(
             $container[Services::DCA_MANAGER],
             $container['form-validation.cache']
         );

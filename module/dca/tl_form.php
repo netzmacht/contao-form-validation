@@ -12,11 +12,11 @@
 /*
  * Config
  */
-$GLOBALS['TL_DCA']['tl_form']['config']['onsubmit_callback'][] = \Netzmacht\Contao\FormValidation\Dca\Form::callback(
+$GLOBALS['TL_DCA']['tl_form']['config']['onsubmit_callback'][] = \Netzmacht\Contao\FormValidation\Dca\FormCallbacks::callback(
     'clearCache'
 );
 
-$GLOBALS['TL_DCA']['tl_form']['config']['ondelete_callback'][] = \Netzmacht\Contao\FormValidation\Dca\Form::callback(
+$GLOBALS['TL_DCA']['tl_form']['config']['ondelete_callback'][] = \Netzmacht\Contao\FormValidation\Dca\FormCallbacks::callback(
     'clearCache'
 );
 
@@ -76,7 +76,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['fv_setting'] = array
         'getSettings'
     ),
     'save_callback'    => array(
-        \Netzmacht\Contao\FormValidation\Dca\Form::callback('addIncompleteWarning')
+        \Netzmacht\Contao\FormValidation\Dca\FormCallbacks::callback('addIncompleteWarning')
     ),
     'wizard'           => array(
         \Netzmacht\Contao\Toolkit\Dca\Callback\CallbackFactory::popupWizard(

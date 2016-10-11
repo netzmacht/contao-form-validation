@@ -12,15 +12,15 @@
 /*
  * Config.
  */
-$GLOBALS['TL_DCA']['tl_form_field']['config']['palettes_callback'][] = \Netzmacht\Contao\FormValidation\Dca\FormField::callback(
+$GLOBALS['TL_DCA']['tl_form_field']['config']['palettes_callback'][] = \Netzmacht\Contao\FormValidation\Dca\FormFieldCallbacks::callback(
     'addFormValidationToPalette'
 );
 
-$GLOBALS['TL_DCA']['tl_form_field']['config']['onsubmit_callback'][] = \Netzmacht\Contao\FormValidation\Dca\FormField::callback(
+$GLOBALS['TL_DCA']['tl_form_field']['config']['onsubmit_callback'][] = \Netzmacht\Contao\FormValidation\Dca\FormFieldCallbacks::callback(
     'clearCache'
 );
 
-$GLOBALS['TL_DCA']['tl_form_field']['config']['ondelete_callback'][] = \Netzmacht\Contao\FormValidation\Dca\FormField::callback(
+$GLOBALS['TL_DCA']['tl_form_field']['config']['ondelete_callback'][] = \Netzmacht\Contao\FormValidation\Dca\FormFieldCallbacks::callback(
     'clearCache'
 );
 

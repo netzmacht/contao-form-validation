@@ -15,10 +15,10 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
         'dataContainer'     => 'Table',
         'enableVersioning'  => true,
         'onload_callback'   => array(
-            \Netzmacht\Contao\FormValidation\Dca\Validation::callback('initializeView')
+            \Netzmacht\Contao\FormValidation\Dca\ValidationCallbacks::callback('initializeView')
         ),
         'onsubmit_callback' => array(
-            \Netzmacht\Contao\FormValidation\Dca\Validation::callback('clearCache'),
+            \Netzmacht\Contao\FormValidation\Dca\ValidationCallbacks::callback('clearCache'),
         ),
         'sql'               => array
         (
@@ -128,7 +128,7 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
             'label'            => &$GLOBALS['TL_LANG']['tl_form_validation']['framework'],
             'inputType'        => 'select',
             'exclude'          => true,
-            'options_callback' => \Netzmacht\Contao\FormValidation\Dca\Form::callback('getFrameworks'),
+            'options_callback' => \Netzmacht\Contao\FormValidation\Dca\FormCallbacks::callback('getFrameworks'),
             'eval'             => array(
                 'tl_class'           => 'w50',
                 'includeBlankOption' => true,
