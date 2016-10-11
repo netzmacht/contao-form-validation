@@ -11,6 +11,7 @@
 
 namespace Netzmacht\Contao\FormValidation\Dca;
 
+use Netzmacht\Contao\Toolkit\Dca\Callback\Callbacks;
 use Netzmacht\Contao\Toolkit\ServiceContainerTrait;
 
 /**
@@ -18,9 +19,21 @@ use Netzmacht\Contao\Toolkit\ServiceContainerTrait;
  *
  * @package Netzmacht\Contao\FormValidation\Dca
  */
-class Validation
+class Validation extends Callbacks
 {
-    use ServiceContainerTrait;
+    /**
+     * Name of the data container.
+     *
+     * @var string
+     */
+    protected static $name = 'tl_form';
+
+    /**
+     * Helper service name.
+     *
+     * @var string
+     */
+    protected static $serviceName = 'form-validation.dca.form';
 
     /**
      * Initialize the view.

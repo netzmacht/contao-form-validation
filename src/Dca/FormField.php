@@ -12,16 +12,50 @@
 namespace Netzmacht\Contao\FormValidation\Dca;
 
 use Bit3\Contao\MetaPalettes\MetaPalettes;
-use Netzmacht\Contao\Toolkit\ServiceContainerTrait;
+use Netzmacht\Contao\FormValidation\Cache;
+use Netzmacht\Contao\Toolkit\Dca\Callback\Callbacks;
+use Netzmacht\Contao\Toolkit\Dca\Manager;
 
 /**
  * Helper for form field data container.
  *
  * @package Netzmacht\Contao\FormValidation\Dca
  */
-class FormField
+class FormField extends Callbacks
 {
-    use ServiceContainerTrait;
+    /**
+     * Name of the data container.
+     *
+     * @var string
+     */
+    protected static $name = 'tl_form_field';
+
+    /**
+     * Helper service name.
+     *
+     * @var string
+     */
+    protected static $serviceName = 'form-validation.dca.form-field';
+
+    /**
+     * Form validation cache.
+     *
+     * @var Cache
+     */
+    private $cache;
+
+    /**
+     * FormField constructor.
+     *
+     * @param Manager $dcaManager Data container manager.
+     * @param Cache   $cache      Form validation cache.
+     */
+    public function __construct(Manager $dcaManager, Cache $cache)
+    {
+        parent::__construct($dcaManager);
+
+        $this->cache = $cache;
+    }
 
     /**
      * Add form validation to the palette of supported widgets.
@@ -31,7 +65,7 @@ class FormField
      */
     public function addFormValidationToPalette()
     {
-        foreach ($GLOBALS['TL_DCA']['tl_form_field']['palettes'] as $name => $palette) {
+        foreach ($this->getDefinition()->get(['palettes'], []) as $name => $palette) {
             if (is_array($palette) || !in_array($name, $GLOBALS['FORMVALIDATION_WIDGETS'])) {
                 continue;
             }
@@ -41,7 +75,7 @@ class FormField
             ));
         }
 
-        if (isset($GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox'])) {
+        if ($this->getDefinition()->has(['palettes', 'checkbox'])) {
             MetaPalettes::appendFields('tl_form_field', 'checkbox', 'expert', array('minlength', 'maxlength'));
         }
     }
@@ -55,7 +89,6 @@ class FormField
      */
     public function clearCache($dataContainer)
     {
-        $cache = $this->getServiceContainer()->getService('form-validation.cache');
-        $cache->remove($dataContainer->activeRecord->pid);
+        $this->cache->remove($dataContainer->activeRecord->pid);
     }
 }

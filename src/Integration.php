@@ -12,7 +12,7 @@
 namespace Netzmacht\Contao\FormValidation;
 
 use Netzmacht\Contao\FormValidation\Model\ValidationModel;
-use Netzmacht\Contao\Toolkit\Assets;
+use Netzmacht\Contao\Toolkit\View\Assets\AssetsManager;
 use Netzmacht\JavascriptBuilder\Builder;
 
 /**
@@ -72,29 +72,39 @@ class Integration
     private $loaded = array();
 
     /**
+     * Assets manager.
+     *
+     * @var AssetsManager
+     */
+    private $assetsManager;
+
+    /**
      * Construct.
      *
-     * @param Builder   $builder    The javascript builder.
-     * @param Assembler $assembler  The form validation assembler.
-     * @param Cache     $cache      Form validation cache.
-     * @param string    $assetPath  The asset path.
-     * @param array     $frameworks Default locale.
-     * @param string    $locale     Loaded forms.
+     * @param Builder       $builder       The javascript builder.
+     * @param Assembler     $assembler     The form validation assembler.
+     * @param Cache         $cache         Form validation cache.
+     * @param AssetsManager $assetsManager Assets manager.
+     * @param string        $assetPath     The asset path.
+     * @param array         $frameworks    Default locale.
+     * @param string        $locale        Loaded forms.
      */
     public function __construct(
         Builder $builder,
         Assembler $assembler,
         Cache $cache,
+        AssetsManager $assetsManager,
         $assetPath,
         array $frameworks,
         $locale
     ) {
-        $this->builder    = $builder;
-        $this->assembler  = $assembler;
-        $this->cache      = $cache;
-        $this->locale     = $locale;
-        $this->frameworks = $frameworks;
-        $this->assetPath  = $assetPath;
+        $this->builder       = $builder;
+        $this->assembler     = $assembler;
+        $this->cache         = $cache;
+        $this->assetsManager = $assetsManager;
+        $this->locale        = $locale;
+        $this->frameworks    = $frameworks;
+        $this->assetPath     = $assetPath;
     }
 
     /**
@@ -127,18 +137,20 @@ class Integration
         if (TL_MODE === 'FE' && $model->fv_active && $model->fv_setting && !isset($this->loaded[$model->id])) {
             $settings = ValidationModel::findByPk($model->fv_setting);
 
-            Assets::addStylesheet($this->assetPath . '/css/formValidation.min.css', 'screen');
-            Assets::addJavascript($this->assetPath . '/js/formValidation.min.js');
+            $this->assetsManager->addStylesheet($this->assetPath . '/css/formValidation.min.css', 'screen');
+            $this->assetsManager->addJavascript($this->assetPath . '/js/formValidation.min.js');
 
             if ($settings && in_array($settings->framework, $this->frameworks)) {
-                Assets::addJavascript(sprintf('%s/js/framework/%s.min.js', $this->assetPath, $settings->framework));
+                $this->assetsManager->addJavascript(
+                    sprintf('%s/js/framework/%s.min.js', $this->assetPath, $settings->framework)
+                );
             }
 
             if ($this->locale) {
-                Assets::addJavascript(sprintf('%s/js/language/%s.js', $this->assetPath, $this->locale));
+                $this->assetsManager->addJavascript(sprintf('%s/js/language/%s.js', $this->assetPath, $this->locale));
             }
 
-            Assets::addJavascript($this->getValidationJavascript($model, $fields, $settings), false);
+            $this->assetsManager->addJavascript($this->getValidationJavascript($model, $fields, $settings), false);
 
             $this->loaded[$model->id] = true;
         }

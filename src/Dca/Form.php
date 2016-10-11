@@ -11,19 +11,61 @@
 
 namespace Netzmacht\Contao\FormValidation\Dca;
 
+use Netzmacht\Contao\FormValidation\Cache;
 use Netzmacht\Contao\FormValidation\Model\ValidationModel;
 use Netzmacht\Contao\Toolkit\Dca;
+use Netzmacht\Contao\Toolkit\Dca\Manager;
 use Netzmacht\Contao\Toolkit\Dca\Options\OptionsBuilder;
-use Netzmacht\Contao\Toolkit\ServiceContainerTrait;
 
 /**
  * Dca helper for form data container.
  *
  * @package Netzmacht\Contao\FormValidation\Dca
  */
-class Form
+class Form extends Dca\Callback\Callbacks
 {
-    use ServiceContainerTrait;
+    /**
+     * Name of the data container.
+     *
+     * @var string
+     */
+    protected static $name = 'tl_form';
+
+    /**
+     * Helper service name.
+     *
+     * @var string
+     */
+    protected static $serviceName = 'form-validation.dca.form';
+
+    /**
+     * Framework options.
+     *
+     * @var array
+     */
+    private $frameworks;
+
+    /**
+     * Data container manager.
+     *
+     * @var Cache
+     */
+    private $cache;
+
+    /**
+     * Form constructor.
+     *
+     * @param Manager $dcaManager Data container manager.
+     * @param Cache   $cache      Form validation cache.
+     * @param array   $frameworks Framework options.
+     */
+    public function __construct(Manager $dcaManager, Cache $cache, array $frameworks)
+    {
+        parent::__construct($dcaManager);
+
+        $this->frameworks = $frameworks;
+        $this->cache      = $cache;
+    }
 
     /**
      * Get framework options.
@@ -35,15 +77,7 @@ class Form
      */
     public function getFrameworks()
     {
-        $options = $GLOBALS['FORMVALIDATION_FRAMEWORKS'];
-
-// @codingStandardsIgnoreStart
-//        if (version_compare(VERSION, '3.4', '>=')) {
-//            $options[] = 'contao';
-//        }
-// @codingStandardsIgnoreEnd
-
-        return $options;
+        return $this->frameworks;
     }
 
     /**
@@ -55,7 +89,7 @@ class Form
     {
         $collection = ValidationModel::findAll(array('order' => 'title'));
 
-        return OptionsBuilder::fromCollection($collection, 'id', 'title')->getOptions();
+        return OptionsBuilder::fromCollection($collection, 'title')->getOptions();
     }
 
     /**
@@ -85,7 +119,6 @@ class Form
      */
     public function clearCache($dataContainer)
     {
-        $cache = $this->getServiceContainer()->getService('form-validation.cache');
-        $cache->remove($dataContainer->id);
+        $this->cache->remove($dataContainer->id);
     }
 }

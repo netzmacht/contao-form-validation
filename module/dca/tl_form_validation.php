@@ -12,86 +12,86 @@
 $GLOBALS['TL_DCA']['tl_form_validation'] = array
 (
     'config' => array(
-        'dataContainer'    => 'Table',
-        'enableVersioning' => true,
-        'onload_callback'  => array(
-            array('Netzmacht\Contao\FormValidation\Dca\Validation', 'initializeView'),
+        'dataContainer'     => 'Table',
+        'enableVersioning'  => true,
+        'onload_callback'   => array(
+            \Netzmacht\Contao\FormValidation\Dca\Validation::callback('initializeView')
         ),
-        'onsubmit_callback'  => array(
-            array('Netzmacht\Contao\FormValidation\Dca\Validation', 'clearCache'),
+        'onsubmit_callback' => array(
+            \Netzmacht\Contao\FormValidation\Dca\Validation::callback('clearCache'),
         ),
-        'sql'              => array
+        'sql'               => array
         (
             'keys' => array
             (
-                'id'    => 'primary',
+                'id' => 'primary',
             )
         )
     ),
 
     'list' => array
     (
-        'sorting' => array
+        'sorting'           => array
         (
-            'mode'                    => 1,
-            'fields'                  => array('title'),
-            'flag'                    => 1,
-            'panelLayout'             => 'limit',
-            'headerFields'            => array('title', 'type'),
+            'mode'         => 1,
+            'fields'       => array('title'),
+            'flag'         => 1,
+            'panelLayout'  => 'limit',
+            'headerFields' => array('title', 'type'),
         ),
-        'label' => array
+        'label'             => array
         (
-            'fields'                  => array('title', 'type'),
-            'format'                  => '%s <span class="tl_gray">[%s]</span>',
+            'fields' => array('title', 'type'),
+            'format' => '%s <span class="tl_gray">[%s]</span>',
         ),
         'global_operations' => array
         (
             'form' => array
             (
-                'label'               => &$GLOBALS['TL_LANG']['tl_form_validation']['form'],
-                'href'                => 'table=tl_form',
-                'icon'                => 'form.gif',
-                'attributes'          => 'onclick="Backend.getScrollOffset();"'
+                'label'      => &$GLOBALS['TL_LANG']['tl_form_validation']['form'],
+                'href'       => 'table=tl_form',
+                'icon'       => 'form.gif',
+                'attributes' => 'onclick="Backend.getScrollOffset();"'
             ),
-            'all' => array
+            'all'  => array
             (
-                'label'               => &$GLOBALS['TL_LANG']['MSC']['all'],
-                'href'                => 'act=select',
-                'class'               => 'header_edit_all',
-                'attributes'          => 'onclick="Backend.getScrollOffset();" accesskey="e"'
+                'label'      => &$GLOBALS['TL_LANG']['MSC']['all'],
+                'href'       => 'act=select',
+                'class'      => 'header_edit_all',
+                'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"'
             ),
         ),
-        'operations' => array
+        'operations'        => array
         (
-            'edit' => array
+            'edit'   => array
             (
-                'label'               => &$GLOBALS['TL_LANG']['tl_form_validation']['edit'],
-                'href'                => 'act=edit',
-                'icon'                => 'edit.gif'
+                'label' => &$GLOBALS['TL_LANG']['tl_form_validation']['edit'],
+                'href'  => 'act=edit',
+                'icon'  => 'edit.gif'
             ),
-            'copy' => array
+            'copy'   => array
             (
-                'label'               => &$GLOBALS['TL_LANG']['tl_form_validation']['copy'],
-                'href'                => 'act=copy',
-                'icon'                => 'copy.gif'
+                'label' => &$GLOBALS['TL_LANG']['tl_form_validation']['copy'],
+                'href'  => 'act=copy',
+                'icon'  => 'copy.gif'
             ),
             'delete' => array
             (
-                'label'               => &$GLOBALS['TL_LANG']['tl_form_validation']['delete'],
-                'href'                => 'act=delete',
-                'icon'                => 'delete.gif',
-                'attributes'          => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\'))return false;Backend.getScrollOffset()"'
+                'label'      => &$GLOBALS['TL_LANG']['tl_form_validation']['delete'],
+                'href'       => 'act=delete',
+                'icon'       => 'delete.gif',
+                'attributes' => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\'))return false;Backend.getScrollOffset()"'
             ),
-            'show' => array
+            'show'   => array
             (
-                'label'               => &$GLOBALS['TL_LANG']['tl_form_validation']['show'],
-                'href'                => 'act=show',
-                'icon'                => 'show.gif'
+                'label' => &$GLOBALS['TL_LANG']['tl_form_validation']['show'],
+                'href'  => 'act=show',
+                'icon'  => 'show.gif'
             )
         )
     ),
 
-    'metapalettes'    => array(
+    'metapalettes' => array(
         'default' => array(
             'title'    => array('title', 'framework', 'message'),
             'config'   => array('live', 'threshold', 'autofocus', 'verbose'),
@@ -106,15 +106,15 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
 
     'fields' => array
     (
-        'id'           => array
+        'id'     => array
         (
             'sql' => "int(10) unsigned NOT NULL auto_increment"
         ),
-        'tstamp'       => array
+        'tstamp' => array
         (
             'sql' => "int(10) unsigned NOT NULL default '0'"
         ),
-        'title'        => array
+        'title'  => array
         (
             'label'     => &$GLOBALS['TL_LANG']['tl_form_validation']['title'],
             'exclude'   => true,
@@ -125,15 +125,15 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
 
         'framework' => array
         (
-            'label'     => &$GLOBALS['TL_LANG']['tl_form_validation']['framework'],
-            'inputType' => 'select',
-            'exclude'   => true,
-            'options_callback' => array('Netzmacht\Contao\FormValidation\Dca\Form', 'getFrameworks'),
-            'eval'      => array(
+            'label'            => &$GLOBALS['TL_LANG']['tl_form_validation']['framework'],
+            'inputType'        => 'select',
+            'exclude'          => true,
+            'options_callback' => \Netzmacht\Contao\FormValidation\Dca\Form::callback('getFrameworks'),
+            'eval'             => array(
                 'tl_class'           => 'w50',
                 'includeBlankOption' => true,
             ),
-            'sql'       => "varchar(128) NOT NULL default ''"
+            'sql'              => "varchar(128) NOT NULL default ''"
         ),
 
         'live' => array
@@ -157,7 +157,7 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
             'exclude'   => true,
             'default'   => true,
             'eval'      => array(
-                'tl_class'           => 'w50',
+                'tl_class' => 'w50',
             ),
             'sql'       => "char(1) NOT NULL default ''"
         ),
@@ -168,24 +168,24 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
             'inputType' => 'text',
             'exclude'   => true,
             'eval'      => array(
-                'tl_class'     => 'w50',
+                'tl_class' => 'w50',
             ),
             'sql'       => "varchar(128) NOT NULL default ''"
         ),
-        
+
         'threshold' => array
         (
             'label'     => &$GLOBALS['TL_LANG']['tl_form_validation']['threshold'],
             'inputType' => 'text',
             'exclude'   => true,
             'eval'      => array(
-                'tl_class'     => 'w50',
-                'rxgp'         => 'digit',
-                'nullIfEmpty'  => true,
+                'tl_class'    => 'w50',
+                'rxgp'        => 'digit',
+                'nullIfEmpty' => true,
             ),
             'sql'       => "int(3) NULL"
         ),
-        
+
         'verbose' => array
         (
             'label'     => &$GLOBALS['TL_LANG']['tl_form_validation']['verbose'],
@@ -193,11 +193,11 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
             'exclude'   => true,
             'default'   => true,
             'eval'      => array(
-                'tl_class'           => 'w50',
+                'tl_class' => 'w50',
             ),
             'sql'       => "char(1) NOT NULL default ''"
         ),
-        
+
         'button_selector' => array
         (
             'label'     => &$GLOBALS['TL_LANG']['tl_form_validation']['button_selector'],
@@ -209,25 +209,25 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
             ),
             'sql'       => "varchar(128) NOT NULL default ''"
         ),
-        
+
         'button_disabled' => array
         (
             'label'     => &$GLOBALS['TL_LANG']['tl_form_validation']['button_disabled'],
             'inputType' => 'text',
             'exclude'   => true,
             'eval'      => array(
-                'tl_class'     => 'w50',
+                'tl_class' => 'w50',
             ),
             'sql'       => "varchar(128) NOT NULL default ''"
         ),
-        
+
         'icon_valid' => array
         (
             'label'     => &$GLOBALS['TL_LANG']['tl_form_validation']['icon_valid'],
             'inputType' => 'text',
             'exclude'   => true,
             'eval'      => array(
-                'tl_class'     => 'w50',
+                'tl_class' => 'w50',
             ),
             'sql'       => "varchar(128) NOT NULL default ''"
         ),
@@ -238,7 +238,7 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
             'inputType' => 'text',
             'exclude'   => true,
             'eval'      => array(
-                'tl_class'     => 'w50',
+                'tl_class' => 'w50',
             ),
             'sql'       => "varchar(128) NOT NULL default ''"
         ),
@@ -249,7 +249,7 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
             'inputType' => 'text',
             'exclude'   => true,
             'eval'      => array(
-                'tl_class'     => 'w50',
+                'tl_class' => 'w50',
             ),
             'sql'       => "varchar(128) NOT NULL default ''"
         ),
@@ -260,7 +260,7 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
             'inputType' => 'text',
             'exclude'   => true,
             'eval'      => array(
-                'tl_class'     => 'w50',
+                'tl_class' => 'w50',
             ),
             'sql'       => "varchar(128) NOT NULL default ''"
         ),
@@ -271,7 +271,7 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
             'inputType' => 'text',
             'exclude'   => true,
             'eval'      => array(
-                'tl_class'     => 'w50',
+                'tl_class' => 'w50',
             ),
             'sql'       => "varchar(128) NOT NULL default ''"
         ),
@@ -282,8 +282,8 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
             'inputType' => 'multiColumnWizard',
             'exclude'   => true,
             'eval'      => array(
-                'tl_class'           => 'clr',
-                'columnFields'       => array(
+                'tl_class'     => 'clr',
+                'columnFields' => array(
                     'exclude' => array(
                         'inputType' => 'text',
                         'exclude'   => true,
@@ -293,7 +293,7 @@ $GLOBALS['TL_DCA']['tl_form_validation'] = array
                         'sql'       => "varchar(128) NOT NULL default ''"
                     )
                 ),
-                'flatArray' => true,
+                'flatArray'    => true,
             ),
             'sql'       => "mediumblob NULL"
         )
