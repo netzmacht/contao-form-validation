@@ -475,7 +475,7 @@ class Validation implements ConvertsToJavascript
     /**
      * Add a field.
      *
-     * @param Field|field $field The form field.
+     * @param Field|string $field The form field.
      *
      * @return Field
      */

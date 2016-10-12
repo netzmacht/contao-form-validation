@@ -11,6 +11,7 @@
 
 namespace Netzmacht\Contao\FormValidation\Assembler;
 
+use ContaoCommunityAlliance\Translator\TranslatorInterface as Translator;
 use Netzmacht\Contao\FormValidation\Event\BuildValidationFieldEvent;
 use Netzmacht\Contao\FormValidation\Field;
 use Netzmacht\Contao\FormValidation\Util\Format;
@@ -46,6 +47,32 @@ class ValidatorAssembler extends AssemblerBase
         'digit'   => 'numeric',
         'natural' => 'integer'
     );
+    
+    /**
+     * Contao config.
+     * 
+     * @var \Config
+     */
+    private $config;
+    
+    /**
+     * Translator.
+     * 
+     * @var Translator
+     */
+    private $translator;
+
+    /**
+     * ValidatorAssembler constructor.
+     *
+     * @param \Config    $config     Contao config.
+     * @param Translator $translator Translator.
+     */
+    public function __construct(\Config $config, Translator $translator)
+    {
+        $this->config     = $config;
+        $this->translator = $translator;
+    }
 
     /**
      * Construct.
@@ -60,15 +87,17 @@ class ValidatorAssembler extends AssemblerBase
         $fieldModel = $event->getFieldModel();
         $field      = $validation->getField($this->getFieldIdentifier($fieldModel));
 
-        if ($field) {
-            $this->assembleFormatValidator($field, $fieldModel);
-            $this->assembleStringLengthValidator($field, $fieldModel);
-            $this->assembleCheckboxRequiredValidator($field, $fieldModel);
-            $this->assembleFileValidator($field, $fieldModel);
-            $this->assemblePasswordValidators($validation, $field, $fieldModel);
-            $this->assembleDateValidator($field, $fieldModel);
-            $this->assemblePhoneValidator($validation, $field, $fieldModel);
+        if (!$field) {
+            return;
         }
+
+        $this->assembleFormatValidator($field, $fieldModel);
+        $this->assembleStringLengthValidator($field, $fieldModel);
+        $this->assembleCheckboxRequiredValidator($field, $fieldModel);
+        $this->assembleFileValidator($field, $fieldModel);
+        $this->assemblePasswordValidators($validation, $field, $fieldModel);
+        $this->assembleDateValidator($field, $fieldModel);
+        $this->assemblePhoneValidator($validation, $field, $fieldModel);
     }
 
     /**
@@ -131,7 +160,6 @@ class ValidatorAssembler extends AssemblerBase
      * @param \FormFieldModel $model      The field model.
      *
      * @return void
-     * @SuppressWarnings(PHPMD.Superglobals)
      */
     private function assemblePasswordValidators(Validation $validation, Field $field, $model)
     {
@@ -139,14 +167,14 @@ class ValidatorAssembler extends AssemblerBase
             return;
         }
 
-        $minLength = \Config::get('minPasswordLength');
+        $minLength = $this->config->get('minPasswordLength');
         $confirm   = $validation->addField($model->name . '_confirm');
 
         $confirm->addValidator(
             'identical',
             array(
                 'field'   => $model->name,
-                'message' => $GLOBALS['TL_LANG']['ERR']['passwordMatch']
+                'message' => $this->translator->translate('ERR.passwordMatch')
             )
         );
 
@@ -175,7 +203,7 @@ class ValidatorAssembler extends AssemblerBase
             return;
         }
 
-        $dateFormat = Format::convertDateFormat(\Config::get($model->rgxp . 'Format'));
+        $dateFormat = Format::convertDateFormat($this->config->get($model->rgxp . 'Format'));
 
         if ($dateFormat !== false) {
             $field->addValidator('date', array('format' => $dateFormat));
@@ -223,7 +251,6 @@ class ValidatorAssembler extends AssemblerBase
      * @param \FormFieldModel $model The field model.
      *
      * @return void
-     * @SuppressWarnings(PHPMD.Superglobals)
      */
     private function assembleCheckboxRequiredValidator(Field $field, \FormFieldModel $model)
     {
@@ -233,30 +260,43 @@ class ValidatorAssembler extends AssemblerBase
 
                 if ($model->maxlength > 0) {
                     $options['message'] = sprintf(
-                        $GLOBALS['TL_LANG']['ERR']['between'],
-                        $model->label,
-                        $model->minlength,
-                        $model->maxlength
+                        $this->translator->translate(
+                            'ERR.between',
+                            null,
+                            [
+                                $model->label,
+                                $model->minlength,
+                                $model->maxlength
+                            ]
+                        )
                     );
                 } else {
                     $options['message'] = sprintf(
-                        $GLOBALS['TL_LANG']['ERR']['minoption'],
-                        $model->label,
-                        $model->minlength
+                        $this->translator->translate(
+                            'ERR.minoption',
+                            null,
+                            [
+                                $model->label,
+                                $model->minlength,
+                            ]
+                        )
                     );
                 }
             } else {
                 $options = array('min' => 1);
 
                 if ($model->maxlength > 0) {
-                    $options['message'] = sprintf(
-                        $GLOBALS['TL_LANG']['ERR']['maxoption'],
-                        $model->label,
-                        $model->maxlength
+                    $options['message'] = $this->translator->translate(
+                        'ERR.maxoption',
+                        null,
+                        [
+                            $model->label,
+                            $model->maxlength,
+                        ]
                     );
                 } else {
-                    $errorKey           = $model->label ? 'mandatory' : 'mdtryNoLabel';
-                    $options['message'] = sprintf($GLOBALS['TL_LANG']['ERR'][$errorKey], $model->label);
+                    $errorKey           = $model->label ? 'ERR.mandatory' : 'ERR.mdtryNoLabel';
+                    $options['message'] = $this->translator->translate($errorKey, null, [$model->label]);
                 }
             }
 

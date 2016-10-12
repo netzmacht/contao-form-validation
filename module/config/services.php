@@ -55,6 +55,13 @@ $container['form-validation.assembler.field-assembler'] = function () {
     );
 };
 
+$container['form-validation.assembler.validator-assembler'] = function ($container) {
+    return new Assembler\ValidatorAssembler(
+        $container[Services::CONFIG],
+        $container[Services::TRANSLATOR]
+    );
+};
+
 $container['form-validation.javascript-builder'] = $container->share(
     function () {
         return new Builder();
