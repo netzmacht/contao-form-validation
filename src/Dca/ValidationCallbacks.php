@@ -27,7 +27,7 @@ class ValidationCallbacks extends Callbacks
      *
      * @var string
      */
-    protected static $name = 'tl_form';
+    protected static $name = 'tl_form_validation';
 
     /**
      * Helper service name.
@@ -60,12 +60,12 @@ class ValidationCallbacks extends Callbacks
      * Initialize the view.
      *
      * @return void
-     * @SuppressWarnings(PHPMD.Superglobals)
      */
     public function initializeView()
     {
         if (\Input::get('popup')) {
-            unset($GLOBALS['TL_DCA']['tl_form_validation']['list']['global_operations']['form']);
+            $operations = &$this->getDefinition()->get(['list', 'global_operations']);
+            unset($operations['form']);
         }
     }
 

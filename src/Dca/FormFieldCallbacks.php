@@ -45,28 +45,36 @@ class FormFieldCallbacks extends Callbacks
     private $cache;
 
     /**
+     * Supported widgets.
+     *
+     * @var array
+     */
+    private $supportedWidgets;
+
+    /**
      * FormField constructor.
      *
-     * @param Manager $dcaManager Data container manager.
-     * @param Cache   $cache      Form validation cache.
+     * @param Manager $dcaManager       Data container manager.
+     * @param Cache   $cache            Form validation cache.
+     * @param array   $supportedWidgets Supported widget.
      */
-    public function __construct(Manager $dcaManager, Cache $cache)
+    public function __construct(Manager $dcaManager, Cache $cache, array $supportedWidgets)
     {
         parent::__construct($dcaManager);
 
-        $this->cache = $cache;
+        $this->cache            = $cache;
+        $this->supportedWidgets = $supportedWidgets;
     }
 
     /**
      * Add form validation to the palette of supported widgets.
      *
      * @return void
-     * @SuppressWarnings(PHPMD.Superglobals)
      */
     public function addFormValidationToPalette()
     {
         foreach ($this->getDefinition()->get(['palettes'], []) as $name => $palette) {
-            if (is_array($palette) || !in_array($name, $GLOBALS['FORMVALIDATION_WIDGETS'])) {
+            if (is_array($palette) || !in_array($name, $this->supportedWidgets)) {
                 continue;
             }
 

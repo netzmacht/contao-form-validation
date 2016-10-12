@@ -71,18 +71,15 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['fv_setting'] = array
     'label'            => &$GLOBALS['TL_LANG']['tl_form']['fv_setting'],
     'inputType'        => 'select',
     'exclude'          => true,
-    'options_callback' => array(
-        'Netzmacht\Contao\FormValidation\Dca\Form',
-        'getSettings'
-    ),
+    'options_callback' => \Netzmacht\Contao\FormValidation\Dca\FormCallbacks::callback('getSettings'),
     'save_callback'    => array(
         \Netzmacht\Contao\FormValidation\Dca\FormCallbacks::callback('addIncompleteWarning')
     ),
     'wizard'           => array(
         \Netzmacht\Contao\Toolkit\Dca\Callback\CallbackFactory::popupWizard(
             'do=form&amp;table=tl_form_validation',
-            $GLOBALS['TL_LANG']['tl_form']['fv_edit_setting'],
-            $GLOBALS['TL_LANG']['tl_form']['fv_edit_setting'],
+            $GLOBALS['TL_LANG']['tl_form']['fv_edit_setting'][0],
+            $GLOBALS['TL_LANG']['tl_form']['fv_edit_setting'][1],
             'edit.gif'
         ),
     ),

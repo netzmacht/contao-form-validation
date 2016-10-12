@@ -11,6 +11,7 @@
 
 namespace Netzmacht\Contao\FormValidation\Dca;
 
+use ContaoCommunityAlliance\Translator\TranslatorInterface as Translator;
 use Netzmacht\Contao\FormValidation\Cache;
 use Netzmacht\Contao\FormValidation\Model\ValidationModel;
 use Netzmacht\Contao\Toolkit\Dca;
@@ -53,18 +54,27 @@ class FormCallbacks extends Dca\Callback\Callbacks
     private $cache;
 
     /**
+     * Translator.
+     *
+     * @var Translator
+     */
+    private $translator;
+
+    /**
      * Form constructor.
      *
-     * @param Manager $dcaManager Data container manager.
-     * @param Cache   $cache      Form validation cache.
-     * @param array   $frameworks Framework options.
+     * @param Manager    $dcaManager Data container manager.
+     * @param Cache      $cache      Form validation cache.
+     * @param Translator $translator Translator.
+     * @param array      $frameworks Framework options.
      */
-    public function __construct(Manager $dcaManager, Cache $cache, array $frameworks)
+    public function __construct(Manager $dcaManager, Cache $cache, Translator $translator, array $frameworks)
     {
         parent::__construct($dcaManager);
 
         $this->frameworks = $frameworks;
         $this->cache      = $cache;
+        $this->translator = $translator;
     }
 
     /**
@@ -73,7 +83,6 @@ class FormCallbacks extends Dca\Callback\Callbacks
      * Contao forms are only supported of Contao 3.3 with the new form widget style.
      *
      * @return array
-     * @SuppressWarnings(PHPMD.Superglobals)
      */
     public function getFrameworks()
     {
@@ -98,13 +107,11 @@ class FormCallbacks extends Dca\Callback\Callbacks
      * @param mixed $value The value.
      *
      * @return mixed
-     *
-     * @SuppressWarnings(PHPMD.Superglobals)
      */
     public function addIncompleteWarning($value)
     {
         if ($value && !\Config::get('fv_assetPath')) {
-            \Message::addError($GLOBALS['TL_LANG']['tl_form']['fv_incompleteWarning']);
+            \Message::addError($this->translator->translate('fv_incompleteWarning', 'tl_form'));
         }
 
         return $value;

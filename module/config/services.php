@@ -100,6 +100,7 @@ $container['form-validation.dca.form'] = $container->share(
         return new FormCallbacks(
             $container[Services::DCA_MANAGER],
             $container['form-validation.cache'],
+            $container[Services::TRANSLATOR],
             $GLOBALS['FORMVALIDATION_FRAMEWORKS']
         );
     }
@@ -109,7 +110,8 @@ $container['form-validation.dca.form-field'] = $container->share(
     function ($container) {
         return new FormFieldCallbacks(
             $container[Services::DCA_MANAGER],
-            $container['form-validation.cache']
+            $container['form-validation.cache'],
+            $GLOBALS['FORMVALIDATION_WIDGETS']
         );
     }
 );
